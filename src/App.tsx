@@ -6,7 +6,11 @@ import { FirstRunSetupPage } from '@/features/auth/FirstRunSetupPage'
 import { ForgotPasswordPage } from '@/features/auth/ForgotPasswordPage'
 import { LoginPage } from '@/features/auth/LoginPage'
 import { ResetPasswordPage } from '@/features/auth/ResetPasswordPage'
+import { CustomerDetailPage } from '@/features/customers/CustomerDetailPage'
+import { CustomersListPage } from '@/features/customers/CustomersListPage'
 import { DashboardPage } from '@/features/dashboard/DashboardPage'
+import { PipelinePage } from '@/features/deals/PipelinePage'
+import { MyDayPage } from '@/features/tasks/MyDayPage'
 
 function App() {
   return (
@@ -25,6 +29,10 @@ function App() {
           }
         >
           <Route path="/" element={<DashboardPage />} />
+          <Route path="/customers" element={<CustomersListPage />} />
+          <Route path="/customers/:id" element={<CustomerDetailPage />} />
+          <Route path="/my-day" element={<MyDayPage />} />
+          <Route path="/pipeline" element={<PipelinePage />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />

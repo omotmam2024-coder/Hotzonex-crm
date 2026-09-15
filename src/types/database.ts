@@ -10,13 +10,84 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instantiate createClient with right options
-  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "14.5"
   }
   public: {
     Tables: {
+      activities: {
+        Row: {
+          body: string | null
+          created_at: string
+          customer_id: string | null
+          deal_id: string | null
+          direction: Database["public"]["Enums"]["activity_direction"]
+          duration_minutes: number | null
+          id: string
+          occurred_at: string
+          outcome: string | null
+          project_id: string | null
+          subject: string | null
+          ticket_id: string | null
+          type: Database["public"]["Enums"]["activity_type"]
+          user_id: string | null
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          customer_id?: string | null
+          deal_id?: string | null
+          direction?: Database["public"]["Enums"]["activity_direction"]
+          duration_minutes?: number | null
+          id?: string
+          occurred_at?: string
+          outcome?: string | null
+          project_id?: string | null
+          subject?: string | null
+          ticket_id?: string | null
+          type: Database["public"]["Enums"]["activity_type"]
+          user_id?: string | null
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          customer_id?: string | null
+          deal_id?: string | null
+          direction?: Database["public"]["Enums"]["activity_direction"]
+          duration_minutes?: number | null
+          id?: string
+          occurred_at?: string
+          outcome?: string | null
+          project_id?: string | null
+          subject?: string | null
+          ticket_id?: string | null
+          type?: Database["public"]["Enums"]["activity_type"]
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activities_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "activities_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "deals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "activities_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       audit_log: {
         Row: {
           action: string
@@ -70,6 +141,376 @@ export type Database = {
           prefix?: string
         }
         Relationships: []
+      }
+      customer_contacts: {
+        Row: {
+          created_at: string
+          customer_id: string
+          email: string | null
+          id: string
+          is_primary: boolean
+          job_title: string | null
+          name: string
+          phone: string | null
+        }
+        Insert: {
+          created_at?: string
+          customer_id: string
+          email?: string | null
+          id?: string
+          is_primary?: boolean
+          job_title?: string | null
+          name: string
+          phone?: string | null
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string
+          email?: string | null
+          id?: string
+          is_primary?: boolean
+          job_title?: string | null
+          name?: string
+          phone?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_contacts_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      customer_files: {
+        Row: {
+          created_at: string
+          customer_id: string
+          doc_type: string | null
+          file_name: string
+          id: string
+          size_bytes: number | null
+          storage_path: string
+          uploaded_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          customer_id: string
+          doc_type?: string | null
+          file_name: string
+          id?: string
+          size_bytes?: number | null
+          storage_path: string
+          uploaded_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string
+          doc_type?: string | null
+          file_name?: string
+          id?: string
+          size_bytes?: number | null
+          storage_path?: string
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_files_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "customer_files_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      customer_notes: {
+        Row: {
+          body: string
+          created_at: string
+          created_by: string | null
+          customer_id: string
+          id: string
+          mentioned_user_ids: string[]
+          pinned: boolean
+          updated_at: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          created_by?: string | null
+          customer_id: string
+          id?: string
+          mentioned_user_ids?: string[]
+          pinned?: boolean
+          updated_at?: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          created_by?: string | null
+          customer_id?: string
+          id?: string
+          mentioned_user_ids?: string[]
+          pinned?: boolean
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_notes_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "customer_notes_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      customers: {
+        Row: {
+          address_text: string | null
+          area: string | null
+          business_name: string | null
+          business_units: Database["public"]["Enums"]["business_unit"][]
+          created_at: string
+          created_by: string | null
+          customer_code: string | null
+          deleted_at: string | null
+          display_name: string | null
+          email: string | null
+          full_name: string | null
+          gps_lat: number | null
+          gps_lng: number | null
+          id: string
+          last_contact_at: string | null
+          location_id: string | null
+          notes: string | null
+          opted_out: boolean
+          owner_id: string | null
+          phone_alt: string | null
+          phone_primary: string
+          preferred_language: string
+          source: string | null
+          status: Database["public"]["Enums"]["customer_status"]
+          tags: string[]
+          type: Database["public"]["Enums"]["customer_type"]
+          updated_at: string
+          whatsapp: string | null
+        }
+        Insert: {
+          address_text?: string | null
+          area?: string | null
+          business_name?: string | null
+          business_units?: Database["public"]["Enums"]["business_unit"][]
+          created_at?: string
+          created_by?: string | null
+          customer_code?: string | null
+          deleted_at?: string | null
+          display_name?: string | null
+          email?: string | null
+          full_name?: string | null
+          gps_lat?: number | null
+          gps_lng?: number | null
+          id?: string
+          last_contact_at?: string | null
+          location_id?: string | null
+          notes?: string | null
+          opted_out?: boolean
+          owner_id?: string | null
+          phone_alt?: string | null
+          phone_primary: string
+          preferred_language?: string
+          source?: string | null
+          status?: Database["public"]["Enums"]["customer_status"]
+          tags?: string[]
+          type?: Database["public"]["Enums"]["customer_type"]
+          updated_at?: string
+          whatsapp?: string | null
+        }
+        Update: {
+          address_text?: string | null
+          area?: string | null
+          business_name?: string | null
+          business_units?: Database["public"]["Enums"]["business_unit"][]
+          created_at?: string
+          created_by?: string | null
+          customer_code?: string | null
+          deleted_at?: string | null
+          display_name?: string | null
+          email?: string | null
+          full_name?: string | null
+          gps_lat?: number | null
+          gps_lng?: number | null
+          id?: string
+          last_contact_at?: string | null
+          location_id?: string | null
+          notes?: string | null
+          opted_out?: boolean
+          owner_id?: string | null
+          phone_alt?: string | null
+          phone_primary?: string
+          preferred_language?: string
+          source?: string | null
+          status?: Database["public"]["Enums"]["customer_status"]
+          tags?: string[]
+          type?: Database["public"]["Enums"]["customer_type"]
+          updated_at?: string
+          whatsapp?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customers_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "customers_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "customers_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      deals: {
+        Row: {
+          business_unit: Database["public"]["Enums"]["business_unit"]
+          closed_at: string | null
+          created_at: string
+          created_by: string | null
+          currency: Database["public"]["Enums"]["currency_code"]
+          customer_id: string
+          deal_code: string | null
+          deleted_at: string | null
+          expected_close: string | null
+          id: string
+          last_activity_at: string | null
+          location_id: string | null
+          lost_reason: string | null
+          owner_id: string | null
+          pipeline_id: string
+          probability: number | null
+          source: string | null
+          stage_id: string
+          status: Database["public"]["Enums"]["deal_status"]
+          title: string
+          updated_at: string
+          value: number
+        }
+        Insert: {
+          business_unit: Database["public"]["Enums"]["business_unit"]
+          closed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          currency?: Database["public"]["Enums"]["currency_code"]
+          customer_id: string
+          deal_code?: string | null
+          deleted_at?: string | null
+          expected_close?: string | null
+          id?: string
+          last_activity_at?: string | null
+          location_id?: string | null
+          lost_reason?: string | null
+          owner_id?: string | null
+          pipeline_id: string
+          probability?: number | null
+          source?: string | null
+          stage_id: string
+          status?: Database["public"]["Enums"]["deal_status"]
+          title: string
+          updated_at?: string
+          value?: number
+        }
+        Update: {
+          business_unit?: Database["public"]["Enums"]["business_unit"]
+          closed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          currency?: Database["public"]["Enums"]["currency_code"]
+          customer_id?: string
+          deal_code?: string | null
+          deleted_at?: string | null
+          expected_close?: string | null
+          id?: string
+          last_activity_at?: string | null
+          location_id?: string | null
+          lost_reason?: string | null
+          owner_id?: string | null
+          pipeline_id?: string
+          probability?: number | null
+          source?: string | null
+          stage_id?: string
+          status?: Database["public"]["Enums"]["deal_status"]
+          title?: string
+          updated_at?: string
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deals_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deals_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deals_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deals_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deals_pipeline_id_fkey"
+            columns: ["pipeline_id"]
+            isOneToOne: false
+            referencedRelation: "pipelines"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deals_stage_id_fkey"
+            columns: ["stage_id"]
+            isOneToOne: false
+            referencedRelation: "pipeline_stages"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       error_log: {
         Row: {
@@ -210,6 +651,65 @@ export type Database = {
           },
         ]
       }
+      pipeline_stages: {
+        Row: {
+          id: string
+          is_lost: boolean
+          is_won: boolean
+          name: string
+          pipeline_id: string
+          probability: number
+          sort_order: number
+        }
+        Insert: {
+          id?: string
+          is_lost?: boolean
+          is_won?: boolean
+          name: string
+          pipeline_id: string
+          probability?: number
+          sort_order?: number
+        }
+        Update: {
+          id?: string
+          is_lost?: boolean
+          is_won?: boolean
+          name?: string
+          pipeline_id?: string
+          probability?: number
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pipeline_stages_pipeline_id_fkey"
+            columns: ["pipeline_id"]
+            isOneToOne: false
+            referencedRelation: "pipelines"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pipelines: {
+        Row: {
+          business_unit: Database["public"]["Enums"]["business_unit"]
+          id: string
+          is_default: boolean
+          name: string
+        }
+        Insert: {
+          business_unit: Database["public"]["Enums"]["business_unit"]
+          id?: string
+          is_default?: boolean
+          name: string
+        }
+        Update: {
+          business_unit?: Database["public"]["Enums"]["business_unit"]
+          id?: string
+          is_default?: boolean
+          name?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -280,6 +780,97 @@ export type Database = {
             columns: ["updated_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tags: {
+        Row: {
+          color: string
+          id: string
+          name: string
+        }
+        Insert: {
+          color?: string
+          id?: string
+          name: string
+        }
+        Update: {
+          color?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      tasks: {
+        Row: {
+          assigned_to: string | null
+          completed_at: string | null
+          created_at: string
+          created_by: string | null
+          customer_id: string | null
+          description: string | null
+          due_at: string | null
+          id: string
+          priority: Database["public"]["Enums"]["priority_level"]
+          related_id: string | null
+          related_type: string | null
+          status: Database["public"]["Enums"]["task_status"]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          customer_id?: string | null
+          description?: string | null
+          due_at?: string | null
+          id?: string
+          priority?: Database["public"]["Enums"]["priority_level"]
+          related_id?: string | null
+          related_type?: string | null
+          status?: Database["public"]["Enums"]["task_status"]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          assigned_to?: string | null
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          customer_id?: string | null
+          description?: string | null
+          due_at?: string | null
+          id?: string
+          priority?: Database["public"]["Enums"]["priority_level"]
+          related_id?: string | null
+          related_type?: string | null
+          status?: Database["public"]["Enums"]["task_status"]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tasks_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
             referencedColumns: ["id"]
           },
         ]

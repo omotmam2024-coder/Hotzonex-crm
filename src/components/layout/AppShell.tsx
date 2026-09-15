@@ -1,4 +1,4 @@
-import { LogOutIcon, MenuIcon } from 'lucide-react'
+import { LogOutIcon, MenuIcon, PlusIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
@@ -12,8 +12,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { useActivityModal } from '@/features/activities/ActivityModalProvider'
+import { NotificationsBell } from '@/features/notifications/NotificationsBell'
 import { useAuth } from '@/hooks/useAuth'
 import { cn } from '@/lib/utils'
+import { GlobalSearch } from './GlobalSearch'
 import { rememberRoute } from './ProtectedRoute'
 import { RouteErrorBoundary } from './RouteErrorBoundary'
 import { NAV_ITEMS } from './nav-items'
@@ -36,6 +39,7 @@ function initials(name: string) {
 
 export function AppShell() {
   const { profile, signOut } = useAuth()
+  const { openLogActivity } = useActivityModal()
   const location = useLocation()
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
 
@@ -105,6 +109,19 @@ export function AppShell() {
           </Link>
           <div className="hidden md:block" />
 
+          <div className="flex items-center gap-2">
+            <GlobalSearch />
+            <Button
+              size="sm"
+              className="gap-1.5"
+              onClick={() => openLogActivity()}
+              title="Log activity (shortcut: A)"
+            >
+              <PlusIcon className="size-4" /> <span className="hidden sm:inline">Log activity</span>
+            </Button>
+
+          <NotificationsBell />
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button
@@ -137,6 +154,7 @@ export function AppShell() {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+          </div>
         </header>
 
         <main className="flex-1 pb-20 md:pb-0">

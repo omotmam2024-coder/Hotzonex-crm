@@ -4,7 +4,10 @@ A production CRM for Hotzonex (Juba, South Sudan) covering three business units 
 
 Built mobile-first for staff on cheap Android phones over unreliable Starlink.
 
-This build is delivered **phase by phase** (see `PHASES.md` once later phases land). Phase 0 — foundation — is complete: sign-in, roles, and the app shell.
+This build is delivered **phase by phase**. Complete so far:
+
+- **Phase 0 — Foundation.** Sign-in, roles, and the app shell.
+- **Phase 1 — Core CRM.** Customers (list, create/edit, duplicate detection, 360 page with Overview/Timeline/Deals/Notes/Files), tags, activities (global "Log activity" + `A` shortcut), tasks + My Day, the sales pipeline (drag-and-drop kanban with rotting indicator and weighted forecast, plus a table view), notifications, and global search (`⌘K`).
 
 ## Tech stack
 
@@ -34,11 +37,15 @@ Set the same variables in your Vercel project's Environment Variables settings f
 
 SQL lives in `supabase/migrations/`, applied in numeric order. Every migration is idempotent (`create table if not exists`, `drop policy if exists … create policy …`) so it can be re-run safely against a fresh or partially-migrated database.
 
-Currently applied (Phase 0):
+Currently applied:
 
 - `0001_extensions_and_enums.sql` — Postgres extensions + all enum types used across every phase.
 - `0002_core_identity.sql` — `locations`, `profiles`, `counters`, `settings`, `fx_rates`, `audit_log`, `notifications`, `error_log`; the `auth_role()/is_admin()/row_visible()` RLS helper functions; the sign-up trigger; RLS policies + hardening (locked-down `SECURITY DEFINER` function grants, indexed foreign keys, `(select auth.uid())` policy pattern).
+- `0003_customers_and_pipeline.sql` — `tags`, `customers`, `customer_contacts`, `customer_files`, `pipelines`, `pipeline_stages`, `deals`, `activities`, `tasks`; per-unit pipeline/stage seed data (§5.3); RLS on every table.
+- `0003_1_customer_notes_and_storage.sql` — `customer_notes` (pinned, @mention-a-teammate-to-notify) and the private `customer-files` Storage bucket with folder-scoped RLS.
 - `0010_seed.sql` — reference data: locations (HQ, Gorom, Jebel Iraq, Sub-Office), document-number counters, company/SLA/tax/venue settings, a starter FX rate.
+
+`customer_notes` isn't in the original build spec's SQL section — the spec's own feature list (§5.2) calls for pinned notes with @mention-to-notify, which needs a real table. Added it rather than leave the Notes tab unbacked.
 
 Apply with the Supabase CLI (`supabase db push`) or via the Supabase SQL editor / MCP tooling. Regenerate types after every schema change:
 
