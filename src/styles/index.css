@@ -57,4 +57,28 @@
   .no-print {
     display: none !important;
   }
+
+  /* 58mm thermal receipt printing: hide everything except the receipt. */
+  body * {
+    visibility: hidden;
+  }
+  .receipt,
+  .receipt * {
+    visibility: visible;
+  }
+  .receipt {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 58mm;
+    padding: 2mm;
+    color: #000;
+    background: #fff;
+    font-size: 10px;
+    line-height: 1.4;
+  }
+  @page {
+    size: 58mm auto;
+    margin: 0;
+  }
 }

@@ -8,6 +8,7 @@ This build is delivered **phase by phase**. Complete so far:
 
 - **Phase 0 — Foundation.** Sign-in, roles, and the app shell.
 - **Phase 1 — Core CRM.** Customers (list, create/edit, duplicate detection, 360 page with Overview/Timeline/Deals/Notes/Files), tags, activities (global "Log activity" + `A` shortcut), tasks + My Day, the sales pipeline (drag-and-drop kanban with rotting indicator and weighted forecast, plus a table view), notifications, and global search (`⌘K`).
+- **Phase 2 — WiFi operations.** Service plans, voucher batches (server-side generation RPC, zero duplicates) with CSV/PDF export for printing, the sell-a-voucher flow with a 58mm thermal/PDF receipt and WhatsApp send, voucher stock alerts and manager+ void, resellers with allocation and settlement/commission tracking, subscriptions with renew/suspend/resume and a daily pg_cron expiry sweep (flags `expiring_soon`/`expired`, creates renewal tasks), and installations with a technician mobile view (one-tap status, GPS capture, photo upload, canvas signature capture).
 
 ## Tech stack
 
@@ -43,9 +44,18 @@ Currently applied:
 - `0002_core_identity.sql` — `locations`, `profiles`, `counters`, `settings`, `fx_rates`, `audit_log`, `notifications`, `error_log`; the `auth_role()/is_admin()/row_visible()` RLS helper functions; the sign-up trigger; RLS policies + hardening (locked-down `SECURITY DEFINER` function grants, indexed foreign keys, `(select auth.uid())` policy pattern).
 - `0003_customers_and_pipeline.sql` — `tags`, `customers`, `customer_contacts`, `customer_files`, `pipelines`, `pipeline_stages`, `deals`, `activities`, `tasks`; per-unit pipeline/stage seed data (§5.3); RLS on every table.
 - `0003_1_customer_notes_and_storage.sql` — `customer_notes` (pinned, @mention-a-teammate-to-notify) and the private `customer-files` Storage bucket with folder-scoped RLS.
+- `0004_wifi_operations.sql` — `payments` (pulled forward from the Phase 3 billing schema — see below), `service_plans`, `resellers`, `voucher_batches`, `vouchers`, `reseller_settlements`, `subscriptions`, `installations`; RLS on every table.
+- `0004_1_wifi_rpcs.sql` — `fn_generate_voucher_batch` (atomic, collision-safe code generation), `fn_sell_voucher`, `fn_void_voucher` (manager+, mandatory reason), `fn_renew_subscription`, `fn_suspend_subscription` / `fn_resume_subscription`; `v_voucher_stock` and `v_subscriptions_expiring` views.
+- `0004_2_expiry_sweep.sql` — `fn_expiry_sweep()` scheduled daily via `pg_cron` at 01:00 UTC: flags `expiring_soon` (T-7…T-1) and `expired` (T+0) subscriptions and creates a renewal task for the account owner.
+- `0004_3_payments_optional_customer.sql` — makes `payments.customer_id` nullable (hotspot vouchers are routinely sold to anonymous walk-ins) and updates `fn_sell_voucher` to match.
+- `0004_4_installation_storage.sql` — the private `installation-files` Storage bucket (photos, signed forms) and `fn_update_installation_status` (technician status transitions, GPS, photos, signature, optional install-fee payment — one call each).
 - `0010_seed.sql` — reference data: locations (HQ, Gorom, Jebel Iraq, Sub-Office), document-number counters, company/SLA/tax/venue settings, a starter FX rate.
 
-`customer_notes` isn't in the original build spec's SQL section — the spec's own feature list (§5.2) calls for pinned notes with @mention-to-notify, which needs a real table. Added it rather than leave the Notes tab unbacked.
+Two intentional adaptations from the original build spec's SQL section, both called out where they happen:
+
+1. **`customer_notes`** isn't in the spec's SQL at all — its own feature list (§5.2) calls for pinned notes with @mention-to-notify, which needs a real table. Added it rather than leave the Notes tab unbacked.
+2. **The expiry sweep runs as a `pg_cron` job**, not an Edge Function on an external trigger. Same daily behaviour (flag subscriptions, create renewal tasks), fewer moving parts, no secret management. WhatsApp/SMS reminder dispatch through message templates arrives with Phase 5's campaigns module, once `message_log`/`message_templates` exist.
+3. **Voucher sale and subscription renewal record a `payments` row directly** rather than raising a formal invoice — `invoices` doesn't exist until Phase 3 billing. `payments` was designed to match the eventual Phase 3 shape exactly, so nothing here needs reworking when invoices land; `fn_renew_subscription` will start raising a proper invoice at that point.
 
 Apply with the Supabase CLI (`supabase db push`) or via the Supabase SQL editor / MCP tooling. Regenerate types after every schema change:
 

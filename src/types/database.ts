@@ -10,6 +10,8 @@ export type Json =
   | Json[]
 
 export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "14.5"
   }
@@ -574,6 +576,134 @@ export type Database = {
           },
         ]
       }
+      installations: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          created_by: string | null
+          currency: Database["public"]["Enums"]["currency_code"]
+          customer_id: string
+          deal_id: string | null
+          equipment: Json
+          gps_lat: number | null
+          gps_lng: number | null
+          id: string
+          install_fee: number
+          job_code: string | null
+          job_type: string
+          location_id: string | null
+          notes: string | null
+          photo_paths: string[]
+          scheduled_at: string | null
+          signature_path: string | null
+          started_at: string | null
+          status: Database["public"]["Enums"]["installation_status"]
+          subscription_id: string | null
+          technician_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          currency?: Database["public"]["Enums"]["currency_code"]
+          customer_id: string
+          deal_id?: string | null
+          equipment?: Json
+          gps_lat?: number | null
+          gps_lng?: number | null
+          id?: string
+          install_fee?: number
+          job_code?: string | null
+          job_type?: string
+          location_id?: string | null
+          notes?: string | null
+          photo_paths?: string[]
+          scheduled_at?: string | null
+          signature_path?: string | null
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["installation_status"]
+          subscription_id?: string | null
+          technician_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          currency?: Database["public"]["Enums"]["currency_code"]
+          customer_id?: string
+          deal_id?: string | null
+          equipment?: Json
+          gps_lat?: number | null
+          gps_lng?: number | null
+          id?: string
+          install_fee?: number
+          job_code?: string | null
+          job_type?: string
+          location_id?: string | null
+          notes?: string | null
+          photo_paths?: string[]
+          scheduled_at?: string | null
+          signature_path?: string | null
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["installation_status"]
+          subscription_id?: string | null
+          technician_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "installations_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "installations_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "installations_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "deals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "installations_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "installations_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "subscriptions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "installations_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "v_subscriptions_expiring"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "installations_technician_id_fkey"
+            columns: ["technician_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       locations: {
         Row: {
           address: string | null
@@ -645,6 +775,79 @@ export type Database = {
           {
             foreignKeyName: "notifications_user_id_fkey"
             columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payments: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: Database["public"]["Enums"]["currency_code"]
+          customer_id: string | null
+          deleted_at: string | null
+          fx_rate_used: number | null
+          id: string
+          location_id: string | null
+          method: Database["public"]["Enums"]["payment_method"]
+          notes: string | null
+          payment_number: string | null
+          received_at: string
+          received_by: string | null
+          reference: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          currency?: Database["public"]["Enums"]["currency_code"]
+          customer_id?: string | null
+          deleted_at?: string | null
+          fx_rate_used?: number | null
+          id?: string
+          location_id?: string | null
+          method?: Database["public"]["Enums"]["payment_method"]
+          notes?: string | null
+          payment_number?: string | null
+          received_at?: string
+          received_by?: string | null
+          reference?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: Database["public"]["Enums"]["currency_code"]
+          customer_id?: string | null
+          deleted_at?: string | null
+          fx_rate_used?: number | null
+          id?: string
+          location_id?: string | null
+          method?: Database["public"]["Enums"]["payment_method"]
+          notes?: string | null
+          payment_number?: string | null
+          received_at?: string
+          received_by?: string | null
+          reference?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_received_by_fkey"
+            columns: ["received_by"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -755,6 +958,174 @@ export type Database = {
         }
         Relationships: []
       }
+      reseller_settlements: {
+        Row: {
+          amount_paid: number
+          commission: number
+          created_at: string
+          created_by: string | null
+          gross_amount: number
+          id: string
+          period_end: string
+          period_start: string
+          reseller_id: string
+          settled_at: string | null
+          vouchers_sold: number
+        }
+        Insert: {
+          amount_paid?: number
+          commission?: number
+          created_at?: string
+          created_by?: string | null
+          gross_amount?: number
+          id?: string
+          period_end: string
+          period_start: string
+          reseller_id: string
+          settled_at?: string | null
+          vouchers_sold?: number
+        }
+        Update: {
+          amount_paid?: number
+          commission?: number
+          created_at?: string
+          created_by?: string | null
+          gross_amount?: number
+          id?: string
+          period_end?: string
+          period_start?: string
+          reseller_id?: string
+          settled_at?: string | null
+          vouchers_sold?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reseller_settlements_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reseller_settlements_reseller_id_fkey"
+            columns: ["reseller_id"]
+            isOneToOne: false
+            referencedRelation: "resellers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      resellers: {
+        Row: {
+          commission_rate: number
+          created_at: string
+          customer_id: string | null
+          id: string
+          is_active: boolean
+          location_id: string | null
+          name: string
+          notes: string | null
+          phone: string
+          updated_at: string
+        }
+        Insert: {
+          commission_rate?: number
+          created_at?: string
+          customer_id?: string | null
+          id?: string
+          is_active?: boolean
+          location_id?: string | null
+          name: string
+          notes?: string | null
+          phone: string
+          updated_at?: string
+        }
+        Update: {
+          commission_rate?: number
+          created_at?: string
+          customer_id?: string | null
+          id?: string
+          is_active?: boolean
+          location_id?: string | null
+          name?: string
+          notes?: string | null
+          phone?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resellers_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "resellers_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      service_plans: {
+        Row: {
+          business_unit: Database["public"]["Enums"]["business_unit"]
+          code: string
+          created_at: string
+          data_cap_mb: number | null
+          description: string | null
+          device_limit: number
+          duration_days: number | null
+          duration_hours: number | null
+          id: string
+          is_active: boolean
+          name: string
+          price_ssp: number
+          price_usd: number | null
+          reorder_level: number
+          speed_mbps: number | null
+          updated_at: string
+        }
+        Insert: {
+          business_unit?: Database["public"]["Enums"]["business_unit"]
+          code: string
+          created_at?: string
+          data_cap_mb?: number | null
+          description?: string | null
+          device_limit?: number
+          duration_days?: number | null
+          duration_hours?: number | null
+          id?: string
+          is_active?: boolean
+          name: string
+          price_ssp?: number
+          price_usd?: number | null
+          reorder_level?: number
+          speed_mbps?: number | null
+          updated_at?: string
+        }
+        Update: {
+          business_unit?: Database["public"]["Enums"]["business_unit"]
+          code?: string
+          created_at?: string
+          data_cap_mb?: number | null
+          description?: string | null
+          device_limit?: number
+          duration_days?: number | null
+          duration_hours?: number | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          price_ssp?: number
+          price_usd?: number | null
+          reorder_level?: number
+          speed_mbps?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       settings: {
         Row: {
           key: string
@@ -780,6 +1151,104 @@ export type Database = {
             columns: ["updated_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      subscriptions: {
+        Row: {
+          auto_renew: boolean
+          created_at: string
+          created_by: string | null
+          currency: Database["public"]["Enums"]["currency_code"]
+          customer_id: string
+          deleted_at: string | null
+          end_date: string
+          id: string
+          last_reminder_at: string | null
+          location_id: string | null
+          mac_address: string | null
+          monthly_fee: number
+          plan_id: string
+          router_username: string | null
+          start_date: string
+          static_ip: unknown
+          status: Database["public"]["Enums"]["subscription_status"]
+          subscription_code: string | null
+          suspend_reason: string | null
+          updated_at: string
+        }
+        Insert: {
+          auto_renew?: boolean
+          created_at?: string
+          created_by?: string | null
+          currency?: Database["public"]["Enums"]["currency_code"]
+          customer_id: string
+          deleted_at?: string | null
+          end_date: string
+          id?: string
+          last_reminder_at?: string | null
+          location_id?: string | null
+          mac_address?: string | null
+          monthly_fee?: number
+          plan_id: string
+          router_username?: string | null
+          start_date?: string
+          static_ip?: unknown
+          status?: Database["public"]["Enums"]["subscription_status"]
+          subscription_code?: string | null
+          suspend_reason?: string | null
+          updated_at?: string
+        }
+        Update: {
+          auto_renew?: boolean
+          created_at?: string
+          created_by?: string | null
+          currency?: Database["public"]["Enums"]["currency_code"]
+          customer_id?: string
+          deleted_at?: string | null
+          end_date?: string
+          id?: string
+          last_reminder_at?: string | null
+          location_id?: string | null
+          mac_address?: string | null
+          monthly_fee?: number
+          plan_id?: string
+          router_username?: string | null
+          start_date?: string
+          static_ip?: unknown
+          status?: Database["public"]["Enums"]["subscription_status"]
+          subscription_code?: string | null
+          suspend_reason?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscriptions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "subscriptions_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "subscriptions_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "subscriptions_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "service_plans"
             referencedColumns: ["id"]
           },
         ]
@@ -875,9 +1344,262 @@ export type Database = {
           },
         ]
       }
+      voucher_batches: {
+        Row: {
+          batch_code: string | null
+          created_at: string
+          generated_by: string | null
+          id: string
+          location_id: string | null
+          notes: string | null
+          plan_id: string
+          quantity: number
+          reseller_id: string | null
+        }
+        Insert: {
+          batch_code?: string | null
+          created_at?: string
+          generated_by?: string | null
+          id?: string
+          location_id?: string | null
+          notes?: string | null
+          plan_id: string
+          quantity: number
+          reseller_id?: string | null
+        }
+        Update: {
+          batch_code?: string | null
+          created_at?: string
+          generated_by?: string | null
+          id?: string
+          location_id?: string | null
+          notes?: string | null
+          plan_id?: string
+          quantity?: number
+          reseller_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "voucher_batches_generated_by_fkey"
+            columns: ["generated_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "voucher_batches_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "voucher_batches_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "service_plans"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "voucher_batches_reseller_id_fkey"
+            columns: ["reseller_id"]
+            isOneToOne: false
+            referencedRelation: "resellers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vouchers: {
+        Row: {
+          batch_id: string | null
+          code: string
+          created_at: string
+          currency: Database["public"]["Enums"]["currency_code"]
+          customer_id: string | null
+          expires_at: string | null
+          id: string
+          location_id: string | null
+          plan_id: string
+          price_sold: number | null
+          reseller_id: string | null
+          sold_at: string | null
+          sold_by: string | null
+          status: Database["public"]["Enums"]["voucher_status"]
+          updated_at: string
+          used_at: string | null
+          void_reason: string | null
+        }
+        Insert: {
+          batch_id?: string | null
+          code: string
+          created_at?: string
+          currency?: Database["public"]["Enums"]["currency_code"]
+          customer_id?: string | null
+          expires_at?: string | null
+          id?: string
+          location_id?: string | null
+          plan_id: string
+          price_sold?: number | null
+          reseller_id?: string | null
+          sold_at?: string | null
+          sold_by?: string | null
+          status?: Database["public"]["Enums"]["voucher_status"]
+          updated_at?: string
+          used_at?: string | null
+          void_reason?: string | null
+        }
+        Update: {
+          batch_id?: string | null
+          code?: string
+          created_at?: string
+          currency?: Database["public"]["Enums"]["currency_code"]
+          customer_id?: string | null
+          expires_at?: string | null
+          id?: string
+          location_id?: string | null
+          plan_id?: string
+          price_sold?: number | null
+          reseller_id?: string | null
+          sold_at?: string | null
+          sold_by?: string | null
+          status?: Database["public"]["Enums"]["voucher_status"]
+          updated_at?: string
+          used_at?: string | null
+          void_reason?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vouchers_batch_id_fkey"
+            columns: ["batch_id"]
+            isOneToOne: false
+            referencedRelation: "voucher_batches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vouchers_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vouchers_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vouchers_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "service_plans"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vouchers_reseller_id_fkey"
+            columns: ["reseller_id"]
+            isOneToOne: false
+            referencedRelation: "resellers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vouchers_sold_by_fkey"
+            columns: ["sold_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
-      [_ in never]: never
+      v_subscriptions_expiring: {
+        Row: {
+          auto_renew: boolean | null
+          created_at: string | null
+          created_by: string | null
+          currency: Database["public"]["Enums"]["currency_code"] | null
+          customer_id: string | null
+          days_left: number | null
+          deleted_at: string | null
+          display_name: string | null
+          end_date: string | null
+          id: string | null
+          last_reminder_at: string | null
+          location_id: string | null
+          mac_address: string | null
+          monthly_fee: number | null
+          phone_primary: string | null
+          plan_id: string | null
+          plan_name: string | null
+          router_username: string | null
+          start_date: string | null
+          static_ip: unknown
+          status: Database["public"]["Enums"]["subscription_status"] | null
+          subscription_code: string | null
+          suspend_reason: string | null
+          updated_at: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscriptions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "subscriptions_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "subscriptions_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "subscriptions_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "service_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v_voucher_stock: {
+        Row: {
+          allocated: number | null
+          available: number | null
+          location_id: string | null
+          location_name: string | null
+          plan_id: string | null
+          plan_name: string | null
+          reorder_level: number | null
+          sold: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vouchers_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vouchers_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "service_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       auth_locations: { Args: never; Returns: string[] }
@@ -890,6 +1612,62 @@ export type Database = {
         Returns: Database["public"]["Enums"]["business_unit"][]
       }
       can_write: { Args: never; Returns: boolean }
+      fn_expiry_sweep: { Args: never; Returns: undefined }
+      fn_generate_voucher_batch: {
+        Args: {
+          p_location_id: string
+          p_notes?: string
+          p_plan_id: string
+          p_quantity: number
+          p_reseller_id?: string
+        }
+        Returns: string
+      }
+      fn_renew_subscription: {
+        Args: {
+          p_amount?: number
+          p_method?: Database["public"]["Enums"]["payment_method"]
+          p_months?: number
+          p_subscription_id: string
+        }
+        Returns: Json
+      }
+      fn_resume_subscription: {
+        Args: { p_subscription_id: string }
+        Returns: undefined
+      }
+      fn_sell_voucher: {
+        Args: {
+          p_code: string
+          p_customer_id?: string
+          p_location_id?: string
+          p_method?: Database["public"]["Enums"]["payment_method"]
+          p_price: number
+        }
+        Returns: Json
+      }
+      fn_suspend_subscription: {
+        Args: { p_reason: string; p_subscription_id: string }
+        Returns: undefined
+      }
+      fn_update_installation_status: {
+        Args: {
+          p_gps_lat?: number
+          p_gps_lng?: number
+          p_installation_id: string
+          p_notes?: string
+          p_payment_method?: Database["public"]["Enums"]["payment_method"]
+          p_photo_paths?: string[]
+          p_record_payment?: boolean
+          p_signature_path?: string
+          p_status: Database["public"]["Enums"]["installation_status"]
+        }
+        Returns: Json
+      }
+      fn_void_voucher: {
+        Args: { p_reason: string; p_voucher_id: string }
+        Returns: undefined
+      }
       is_admin: { Args: never; Returns: boolean }
       is_first_run: { Args: never; Returns: boolean }
       next_code: { Args: { p_key: string }; Returns: string }

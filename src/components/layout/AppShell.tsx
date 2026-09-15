@@ -1,4 +1,4 @@
-import { LogOutIcon, MenuIcon, PlusIcon } from 'lucide-react'
+import { LogOutIcon, MenuIcon, MoreHorizontalIcon, PlusIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
@@ -12,6 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { useActivityModal } from '@/features/activities/ActivityModalProvider'
 import { NotificationsBell } from '@/features/notifications/NotificationsBell'
 import { useAuth } from '@/hooks/useAuth'
@@ -42,6 +43,7 @@ export function AppShell() {
   const { openLogActivity } = useActivityModal()
   const location = useLocation()
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const [moreOpen, setMoreOpen] = useState(false)
 
   useEffect(() => {
     rememberRoute(location.pathname)
@@ -49,6 +51,8 @@ export function AppShell() {
 
   const displayName = profile?.full_name || profile?.email || 'You'
   const roleLabel = profile ? (ROLE_LABEL[profile.role] ?? profile.role) : ''
+  const primaryNavItems = NAV_ITEMS.filter((item) => item.primary)
+  const secondaryNavItems = NAV_ITEMS.filter((item) => !item.primary)
 
   return (
     <div className="flex min-h-dvh bg-bg text-text">
@@ -166,7 +170,7 @@ export function AppShell() {
 
       {/* Mobile bottom tab bar */}
       <nav className="fixed inset-x-0 bottom-0 z-30 flex h-16 border-t border-border bg-surface no-print md:hidden">
-        {NAV_ITEMS.map((item) => (
+        {primaryNavItems.map((item) => (
           <NavLink
             key={item.path}
             to={item.path}
@@ -182,7 +186,48 @@ export function AppShell() {
             {item.label}
           </NavLink>
         ))}
+        {secondaryNavItems.length > 0 && (
+          <button
+            type="button"
+            onClick={() => setMoreOpen(true)}
+            className={cn(
+              'flex flex-1 flex-col items-center justify-center gap-1 text-xs font-medium',
+              secondaryNavItems.some((item) => location.pathname.startsWith(item.path))
+                ? 'text-accent'
+                : 'text-text-muted',
+            )}
+          >
+            <MoreHorizontalIcon className="size-5" />
+            More
+          </button>
+        )}
       </nav>
+
+      <Sheet open={moreOpen} onOpenChange={setMoreOpen}>
+        <SheetContent side="bottom" className="md:hidden">
+          <SheetHeader>
+            <SheetTitle>More</SheetTitle>
+          </SheetHeader>
+          <div className="flex flex-col gap-1 pb-4">
+            {secondaryNavItems.map((item) => (
+              <NavLink
+                key={item.path}
+                to={item.path}
+                onClick={() => setMoreOpen(false)}
+                className={({ isActive }) =>
+                  cn(
+                    'flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium',
+                    isActive ? 'bg-accent/15 text-accent' : 'text-text hover:bg-surface-2',
+                  )
+                }
+              >
+                <item.icon className="size-5" />
+                {item.label}
+              </NavLink>
+            ))}
+          </div>
+        </SheetContent>
+      </Sheet>
     </div>
   )
 }

@@ -9,6 +9,7 @@ import {
   StickyNoteIcon,
   Trash2Icon,
   UploadIcon,
+  WifiIcon,
 } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -135,6 +136,7 @@ export function CustomerDetailPage() {
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="timeline">Timeline</TabsTrigger>
+          {customer.business_units.includes('wifi') && <TabsTrigger value="services">Services</TabsTrigger>}
           <TabsTrigger value="deals">Deals</TabsTrigger>
           <TabsTrigger value="notes">Notes</TabsTrigger>
           <TabsTrigger value="files">Files</TabsTrigger>
@@ -179,6 +181,12 @@ export function CustomerDetailPage() {
         <TabsContent value="timeline">
           {tab === 'timeline' && <TimelineTab customerId={customer.id} onLogActivity={() => setLogOpen(true)} />}
         </TabsContent>
+
+        {customer.business_units.includes('wifi') && (
+          <TabsContent value="services">
+            {tab === 'services' && <ServicesTab customerId={customer.id} />}
+          </TabsContent>
+        )}
 
         <TabsContent value="deals">
           {tab === 'deals' && (
@@ -349,6 +357,111 @@ function DealsTab({
           </div>
         </button>
       ))}
+    </div>
+  )
+}
+
+function ServicesTab({ customerId }: { customerId: string }) {
+  const { data: subscriptions, isLoading: subsLoading, isError: subsError, refetch: refetchSubs } = useQuery({
+    queryKey: ['subscriptions', 'byCustomer', customerId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('subscriptions')
+        .select('id, subscription_code, status, end_date, monthly_fee, currency, service_plans(name)')
+        .eq('customer_id', customerId)
+        .order('end_date', { ascending: false })
+      if (error) throw error
+      return data
+    },
+  })
+
+  const { data: vouchers } = useQuery({
+    queryKey: ['vouchers', 'byCustomer', customerId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('vouchers')
+        .select('id, code, status, price_sold, currency, sold_at, service_plans(name)')
+        .eq('customer_id', customerId)
+        .order('sold_at', { ascending: false })
+        .limit(20)
+      if (error) throw error
+      return data
+    },
+  })
+
+  const { data: installations } = useQuery({
+    queryKey: ['installations', 'byCustomer', customerId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('installations')
+        .select('id, job_code, job_type, status, scheduled_at')
+        .eq('customer_id', customerId)
+        .order('scheduled_at', { ascending: false })
+      if (error) throw error
+      return data
+    },
+  })
+
+  if (subsLoading) return <SkeletonRows count={3} />
+  if (subsError) return <ErrorState onRetry={() => void refetchSubs()} />
+
+  const nothing = (subscriptions?.length ?? 0) === 0 && (vouchers?.length ?? 0) === 0 && (installations?.length ?? 0) === 0
+  if (nothing) {
+    return <EmptyState icon={WifiIcon} title="No WiFi services yet" description="Subscriptions, vouchers and installations will show up here." />
+  }
+
+  return (
+    <div className="flex flex-col gap-4">
+      {subscriptions && subscriptions.length > 0 && (
+        <div>
+          <h3 className="mb-2 text-sm font-semibold text-text">Subscriptions</h3>
+          <div className="flex flex-col gap-2">
+            {subscriptions.map((s) => (
+              <div key={s.id} className="flex items-center justify-between rounded-card border border-border bg-surface p-3 text-sm">
+                <span className="text-text">{s.service_plans?.name} · {formatMoney(s.monthly_fee, s.currency)}/mo</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-text-muted">Ends {formatDate(s.end_date)}</span>
+                  <StatusBadge status={s.status} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {vouchers && vouchers.length > 0 && (
+        <div>
+          <h3 className="mb-2 text-sm font-semibold text-text">Vouchers</h3>
+          <div className="flex flex-col gap-2">
+            {vouchers.map((v) => (
+              <div key={v.id} className="flex items-center justify-between rounded-card border border-border bg-surface p-3 text-sm">
+                <span className="font-mono text-text">{v.code}</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-text-muted">{v.service_plans?.name}</span>
+                  <StatusBadge status={v.status} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {installations && installations.length > 0 && (
+        <div>
+          <h3 className="mb-2 text-sm font-semibold text-text">Installations</h3>
+          <div className="flex flex-col gap-2">
+            {installations.map((i) => (
+              <div key={i.id} className="flex items-center justify-between rounded-card border border-border bg-surface p-3 text-sm">
+                <span className="text-text">{i.job_type} · {i.job_code}</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-text-muted">{i.scheduled_at ? formatDate(i.scheduled_at) : '—'}</span>
+                  <StatusBadge status={i.status} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

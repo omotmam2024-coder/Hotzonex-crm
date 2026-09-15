@@ -2,6 +2,8 @@ import { useQuery } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 import type { Database } from '@/types/database'
 
+export { useSettingValue } from '@/hooks/useSettingValue'
+
 export interface DealRow {
   id: string
   deal_code: string | null
@@ -33,17 +35,5 @@ export function useDealsByUnit(businessUnit: Database['public']['Enums']['busine
       return data as unknown as DealRow[]
     },
     staleTime: 30_000,
-  })
-}
-
-export function useSettingValue<T>(key: string, fallback: T) {
-  return useQuery({
-    queryKey: ['settings', key],
-    queryFn: async () => {
-      const { data, error } = await supabase.from('settings').select('value').eq('key', key).maybeSingle()
-      if (error) throw error
-      return (data?.value as T) ?? fallback
-    },
-    staleTime: 5 * 60_000,
   })
 }
