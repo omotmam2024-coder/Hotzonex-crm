@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0B1220" />
+    <title>Offline — Hotzonex CRM</title>
+    <style>
+      :root {
+        color-scheme: dark;
+      }
+      body {
+        margin: 0;
+        min-height: 100dvh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        padding: 24px;
+        text-align: center;
+        background: #0b1220;
+        color: #e8eef7;
+        font-family: Inter, system-ui, -apple-system, sans-serif;
+      }
+      .badge {
+        width: 56px;
+        height: 56px;
+        border-radius: 14px;
+        background: #14b8a6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 22px;
+        color: #0b1220;
+      }
+      h1 {
+        font-size: 18px;
+        font-weight: 600;
+        margin: 0;
+      }
+      p {
+        margin: 0;
+        max-width: 320px;
+        font-size: 14px;
+        color: #94a6c0;
+      }
+      button {
+        margin-top: 8px;
+        border: none;
+        border-radius: 10px;
+        padding: 10px 20px;
+        font-size: 14px;
+        font-weight: 600;
+        background: #14b8a6;
+        color: #0b1220;
+        cursor: pointer;
+      }
+      button:active {
+        background: #0d9488;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="badge">H</div>
+    <h1>You're offline</h1>
+    <p>Hotzonex CRM couldn't load — no connection, and this page hasn't been opened before on this device. Reconnect and try again.</p>
+    <button onclick="location.reload()">Try again</button>
+  </body>
+</html>

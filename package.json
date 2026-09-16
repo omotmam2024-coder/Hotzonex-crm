@@ -7,7 +7,11 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:rls": "tsx scripts/rls-test.ts",
+    "test:money": "tsx scripts/money-integrity-test.ts",
+    "test:voucher-concurrency": "tsx scripts/voucher-concurrency-test.ts",
+    "demo:reset": "tsx scripts/reset-demo-data.ts"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
@@ -56,7 +60,9 @@
     "@vitejs/plugin-react": "^6.1.1",
     "oxlint": "^1.81.0",
     "tailwindcss": "^4.3.3",
+    "tsx": "^4.23.13",
     "typescript": "~6.0.2",
-    "vite": "^8.3.0"
+    "vite": "^8.3.0",
+    "vite-plugin-pwa": "^1.3.0"
   }
 }

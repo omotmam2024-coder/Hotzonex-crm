@@ -18,6 +18,7 @@ import { NotificationsBell } from '@/features/notifications/NotificationsBell'
 import { useAuth } from '@/hooks/useAuth'
 import { cn } from '@/lib/utils'
 import { GlobalSearch } from './GlobalSearch'
+import { OfflineBanner } from './OfflineBanner'
 import { rememberRoute } from './ProtectedRoute'
 import { RouteErrorBoundary } from './RouteErrorBoundary'
 import { NAV_ITEMS } from './nav-items'
@@ -161,8 +162,10 @@ export function AppShell() {
           </div>
         </header>
 
+        <OfflineBanner />
+
         <main className="flex-1 pb-20 md:pb-0">
-          <RouteErrorBoundary route={location.pathname}>
+          <RouteErrorBoundary key={location.pathname} route={location.pathname}>
             <Outlet />
           </RouteErrorBoundary>
         </main>
