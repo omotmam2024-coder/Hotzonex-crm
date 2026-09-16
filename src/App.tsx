@@ -19,6 +19,8 @@ const MyDayPage = lazy(() => import('@/features/tasks/MyDayPage').then((m) => ({
 const PipelinePage = lazy(() => import('@/features/deals/PipelinePage').then((m) => ({ default: m.PipelinePage })))
 const SellVoucherPage = lazy(() => import('@/features/wifi/SellVoucherPage').then((m) => ({ default: m.SellVoucherPage })))
 const WifiHubPage = lazy(() => import('@/features/wifi/WifiHubPage').then((m) => ({ default: m.WifiHubPage })))
+const TicketsPage = lazy(() => import('@/features/tickets/TicketsPage').then((m) => ({ default: m.TicketsPage })))
+const BillingHubPage = lazy(() => import('@/features/billing/BillingHubPage').then((m) => ({ default: m.BillingHubPage })))
 
 function RouteFallback() {
   return (
@@ -52,6 +54,8 @@ function App() {
             <Route path="/pipeline" element={<PipelinePage />} />
             <Route path="/sell" element={<SellVoucherPage />} />
             <Route path="/wifi" element={<WifiHubPage />} />
+            <Route path="/tickets" element={<TicketsPage />} />
+            <Route path="/billing" element={<BillingHubPage />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />

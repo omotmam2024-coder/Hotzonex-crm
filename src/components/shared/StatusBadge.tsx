@@ -32,6 +32,11 @@ const STATUS_VARIANT: Record<string, BadgeVariant> = {
   paid: 'success',
   completed: 'success',
   confirmed: 'success',
+  // tickets
+  pending_customer: 'warning',
+  escalated: 'danger',
+  resolved: 'success',
+  closed: 'muted',
 }
 
 function labelize(status: string) {

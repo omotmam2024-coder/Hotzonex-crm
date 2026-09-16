@@ -1,7 +1,9 @@
 import {
+  HeadsetIcon,
   HomeIcon,
   KanbanSquareIcon,
   ListTodoIcon,
+  ReceiptTextIcon,
   TicketPercentIcon,
   UsersIcon,
   WifiIcon,
@@ -27,4 +29,6 @@ export const NAV_ITEMS: NavItem[] = [
   { label: 'My Day', path: '/my-day', icon: ListTodoIcon, primary: true },
   { label: 'Pipeline', path: '/pipeline', icon: KanbanSquareIcon },
   { label: 'WiFi', path: '/wifi', icon: WifiIcon },
+  { label: 'Tickets', path: '/tickets', icon: HeadsetIcon },
+  { label: 'Billing', path: '/billing', icon: ReceiptTextIcon },
 ]

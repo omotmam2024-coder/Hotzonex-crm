@@ -22,3 +22,11 @@ on conflict (key) do nothing;
 insert into public.fx_rates (effective_date, ssp_per_usd) values
   (current_date, 4500.0000)
 on conflict (effective_date) do nothing;
+
+insert into public.ticket_categories (name, business_unit, default_priority) values
+  ('No Internet','wifi','urgent'), ('Slow Speed','wifi','high'),
+  ('Billing Query','wifi','normal'), ('Voucher Issue','wifi','high'),
+  ('Equipment Fault','wifi','high'), ('Relocation','wifi','normal'),
+  ('New Request','wifi','normal'), ('Website Support','services','normal'),
+  ('Other','wifi','low')
+on conflict (name) do nothing;

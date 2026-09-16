@@ -3,6 +3,8 @@ import {
   BriefcaseIcon,
   ClockIcon,
   FileIcon,
+  FileTextIcon,
+  HeadsetIcon,
   PencilIcon,
   PinIcon,
   PlusIcon,
@@ -138,6 +140,8 @@ export function CustomerDetailPage() {
           <TabsTrigger value="timeline">Timeline</TabsTrigger>
           {customer.business_units.includes('wifi') && <TabsTrigger value="services">Services</TabsTrigger>}
           <TabsTrigger value="deals">Deals</TabsTrigger>
+          <TabsTrigger value="billing">Billing</TabsTrigger>
+          <TabsTrigger value="tickets">Tickets</TabsTrigger>
           <TabsTrigger value="notes">Notes</TabsTrigger>
           <TabsTrigger value="files">Files</TabsTrigger>
         </TabsList>
@@ -196,6 +200,14 @@ export function CustomerDetailPage() {
               onOpenDeal={(dealId) => navigate(`/pipeline?deal=${dealId}`)}
             />
           )}
+        </TabsContent>
+
+        <TabsContent value="billing">
+          {tab === 'billing' && <BillingTab customerId={customer.id} onOpenInvoice={(id) => navigate(`/billing?invoice=${id}`)} />}
+        </TabsContent>
+
+        <TabsContent value="tickets">
+          {tab === 'tickets' && <TicketsTab customerId={customer.id} onOpenTicket={(id) => navigate(`/tickets?ticket=${id}`)} />}
         </TabsContent>
 
         <TabsContent value="notes">
@@ -462,6 +474,120 @@ function ServicesTab({ customerId }: { customerId: string }) {
           </div>
         </div>
       )}
+    </div>
+  )
+}
+
+function BillingTab({ customerId, onOpenInvoice }: { customerId: string; onOpenInvoice: (id: string) => void }) {
+  const { data: balance } = useQuery({
+    queryKey: ['v_customer_balances', customerId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('v_customer_balances')
+        .select('invoiced, paid, balance_due')
+        .eq('customer_id', customerId)
+        .maybeSingle()
+      if (error) throw error
+      return data
+    },
+  })
+
+  const { data: invoices, isLoading, isError, refetch } = useQuery({
+    queryKey: ['invoices', 'byCustomer', customerId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('invoices')
+        .select('id, invoice_number, status, total, amount_paid, currency, due_date')
+        .eq('customer_id', customerId)
+        .order('issue_date', { ascending: false })
+      if (error) throw error
+      return data
+    },
+  })
+
+  if (isLoading) return <SkeletonRows count={3} />
+  if (isError) return <ErrorState onRetry={() => void refetch()} />
+
+  return (
+    <div className="flex flex-col gap-3">
+      {balance && (
+        <div className="grid grid-cols-3 gap-2">
+          <div className="rounded-card border border-border bg-surface p-3">
+            <p className="text-xs text-text-muted">Invoiced</p>
+            <p className="text-sm font-semibold text-text">{formatMoney(balance.invoiced, 'SSP')}</p>
+          </div>
+          <div className="rounded-card border border-border bg-surface p-3">
+            <p className="text-xs text-text-muted">Paid</p>
+            <p className="text-sm font-semibold text-success">{formatMoney(balance.paid, 'SSP')}</p>
+          </div>
+          <div className="rounded-card border border-border bg-surface p-3">
+            <p className="text-xs text-text-muted">Balance due</p>
+            <p className="text-sm font-semibold text-danger">{formatMoney(balance.balance_due, 'SSP')}</p>
+          </div>
+        </div>
+      )}
+
+      {!invoices || invoices.length === 0 ? (
+        <EmptyState icon={FileTextIcon} title="No invoices yet" description="Invoices raised for this customer will show up here." />
+      ) : (
+        <div className="flex flex-col gap-2">
+          {invoices.map((inv) => (
+            <button
+              key={inv.id}
+              onClick={() => onOpenInvoice(inv.id)}
+              className="flex items-center justify-between gap-2 rounded-card border border-border bg-surface p-3 text-left hover:bg-surface-2"
+            >
+              <div>
+                <p className="text-sm font-medium text-text">{inv.invoice_number}</p>
+                <p className="text-xs text-text-muted">Due {formatDate(inv.due_date)}</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-text">{formatMoney(inv.total, inv.currency)}</span>
+                <StatusBadge status={inv.status} />
+              </div>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function TicketsTab({ customerId, onOpenTicket }: { customerId: string; onOpenTicket: (id: string) => void }) {
+  const { data, isLoading, isError, refetch } = useQuery({
+    queryKey: ['tickets', 'byCustomer', customerId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('tickets')
+        .select('id, ticket_number, subject, status, priority, created_at')
+        .eq('customer_id', customerId)
+        .order('created_at', { ascending: false })
+      if (error) throw error
+      return data
+    },
+  })
+
+  if (isLoading) return <SkeletonRows count={3} />
+  if (isError) return <ErrorState onRetry={() => void refetch()} />
+  if (!data || data.length === 0) {
+    return <EmptyState icon={HeadsetIcon} title="No tickets yet" description="Support tickets raised for this customer will show up here." />
+  }
+
+  return (
+    <div className="flex flex-col gap-2">
+      {data.map((t) => (
+        <button
+          key={t.id}
+          onClick={() => onOpenTicket(t.id)}
+          className="flex items-center justify-between gap-2 rounded-card border border-border bg-surface p-3 text-left hover:bg-surface-2"
+        >
+          <div>
+            <p className="text-sm font-medium text-text">{t.subject}</p>
+            <p className="text-xs text-text-muted">{t.ticket_number} · {formatRelative(t.created_at)}</p>
+          </div>
+          <StatusBadge status={t.status} />
+        </button>
+      ))}
     </div>
   )
 }

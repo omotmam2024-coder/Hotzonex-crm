@@ -1,6 +1,5 @@
-// Generated from the live schema via the Supabase MCP `generate_typescript_types`
-// tool (equivalent to `supabase gen types typescript --project-id <ref>`).
-// Do not hand-edit — regenerate after every migration.
+// Generated from the Supabase schema (supabase gen types typescript). Do not hand-edit.
+
 export type Json =
   | string
   | number
@@ -73,6 +72,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "customers"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "activities_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "v_customer_balances"
+            referencedColumns: ["customer_id"]
           },
           {
             foreignKeyName: "activities_deal_id_fkey"
@@ -183,6 +189,13 @@ export type Database = {
             referencedRelation: "customers"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "customer_contacts_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "v_customer_balances"
+            referencedColumns: ["customer_id"]
+          },
         ]
       }
       customer_files: {
@@ -223,6 +236,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "customers"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "customer_files_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "v_customer_balances"
+            referencedColumns: ["customer_id"]
           },
           {
             foreignKeyName: "customer_files_uploaded_by_fkey"
@@ -278,6 +298,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "customers"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "customer_notes_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "v_customer_balances"
+            referencedColumns: ["customer_id"]
           },
         ]
       }
@@ -485,6 +512,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "deals_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "v_customer_balances"
+            referencedColumns: ["customer_id"]
+          },
+          {
             foreignKeyName: "deals_location_id_fkey"
             columns: ["location_id"]
             isOneToOne: false
@@ -668,6 +702,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "installations_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "v_customer_balances"
+            referencedColumns: ["customer_id"]
+          },
+          {
             foreignKeyName: "installations_deal_id_fkey"
             columns: ["deal_id"]
             isOneToOne: false
@@ -700,6 +741,171 @@ export type Database = {
             columns: ["technician_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      invoice_items: {
+        Row: {
+          description: string
+          discount: number
+          id: string
+          invoice_id: string
+          line_total: number
+          plan_id: string | null
+          quantity: number
+          sort_order: number
+          unit_price: number
+        }
+        Insert: {
+          description: string
+          discount?: number
+          id?: string
+          invoice_id: string
+          line_total?: number
+          plan_id?: string | null
+          quantity?: number
+          sort_order?: number
+          unit_price?: number
+        }
+        Update: {
+          description?: string
+          discount?: number
+          id?: string
+          invoice_id?: string
+          line_total?: number
+          plan_id?: string | null
+          quantity?: number
+          sort_order?: number
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoice_items_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoice_items_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "v_invoice_aging"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoice_items_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "service_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      invoices: {
+        Row: {
+          amount_paid: number
+          business_unit: Database["public"]["Enums"]["business_unit"]
+          created_at: string
+          created_by: string | null
+          currency: Database["public"]["Enums"]["currency_code"]
+          customer_id: string
+          deleted_at: string | null
+          discount: number
+          due_date: string
+          fx_rate_used: number | null
+          id: string
+          invoice_number: string | null
+          issue_date: string
+          location_id: string | null
+          notes: string | null
+          reference_id: string | null
+          reference_type: string | null
+          status: Database["public"]["Enums"]["invoice_status"]
+          subtotal: number
+          tax: number
+          terms: string | null
+          total: number
+          updated_at: string
+        }
+        Insert: {
+          amount_paid?: number
+          business_unit?: Database["public"]["Enums"]["business_unit"]
+          created_at?: string
+          created_by?: string | null
+          currency?: Database["public"]["Enums"]["currency_code"]
+          customer_id: string
+          deleted_at?: string | null
+          discount?: number
+          due_date?: string
+          fx_rate_used?: number | null
+          id?: string
+          invoice_number?: string | null
+          issue_date?: string
+          location_id?: string | null
+          notes?: string | null
+          reference_id?: string | null
+          reference_type?: string | null
+          status?: Database["public"]["Enums"]["invoice_status"]
+          subtotal?: number
+          tax?: number
+          terms?: string | null
+          total?: number
+          updated_at?: string
+        }
+        Update: {
+          amount_paid?: number
+          business_unit?: Database["public"]["Enums"]["business_unit"]
+          created_at?: string
+          created_by?: string | null
+          currency?: Database["public"]["Enums"]["currency_code"]
+          customer_id?: string
+          deleted_at?: string | null
+          discount?: number
+          due_date?: string
+          fx_rate_used?: number | null
+          id?: string
+          invoice_number?: string | null
+          issue_date?: string
+          location_id?: string | null
+          notes?: string | null
+          reference_id?: string | null
+          reference_type?: string | null
+          status?: Database["public"]["Enums"]["invoice_status"]
+          subtotal?: number
+          tax?: number
+          terms?: string | null
+          total?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoices_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoices_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoices_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "v_customer_balances"
+            referencedColumns: ["customer_id"]
+          },
+          {
+            foreignKeyName: "invoices_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
             referencedColumns: ["id"]
           },
         ]
@@ -781,6 +987,52 @@ export type Database = {
           },
         ]
       }
+      payment_allocations: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          invoice_id: string
+          payment_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: string
+          invoice_id: string
+          payment_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          invoice_id?: string
+          payment_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_allocations_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_allocations_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "v_invoice_aging"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_allocations_payment_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: false
+            referencedRelation: "payments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       payments: {
         Row: {
           amount: number
@@ -837,6 +1089,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "customers"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "v_customer_balances"
+            referencedColumns: ["customer_id"]
           },
           {
             foreignKeyName: "payments_location_id_fkey"
@@ -1061,6 +1320,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "resellers_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "v_customer_balances"
+            referencedColumns: ["customer_id"]
+          },
+          {
             foreignKeyName: "resellers_location_id_fkey"
             columns: ["location_id"]
             isOneToOne: false
@@ -1238,6 +1504,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "subscriptions_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "v_customer_balances"
+            referencedColumns: ["customer_id"]
+          },
+          {
             foreignKeyName: "subscriptions_location_id_fkey"
             columns: ["location_id"]
             isOneToOne: false
@@ -1340,6 +1613,220 @@ export type Database = {
             columns: ["customer_id"]
             isOneToOne: false
             referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "v_customer_balances"
+            referencedColumns: ["customer_id"]
+          },
+        ]
+      }
+      ticket_categories: {
+        Row: {
+          business_unit: Database["public"]["Enums"]["business_unit"]
+          default_priority: Database["public"]["Enums"]["priority_level"]
+          id: string
+          is_active: boolean
+          name: string
+        }
+        Insert: {
+          business_unit?: Database["public"]["Enums"]["business_unit"]
+          default_priority?: Database["public"]["Enums"]["priority_level"]
+          id?: string
+          is_active?: boolean
+          name: string
+        }
+        Update: {
+          business_unit?: Database["public"]["Enums"]["business_unit"]
+          default_priority?: Database["public"]["Enums"]["priority_level"]
+          id?: string
+          is_active?: boolean
+          name?: string
+        }
+        Relationships: []
+      }
+      ticket_comments: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          is_internal: boolean
+          ticket_id: string
+          user_id: string | null
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          is_internal?: boolean
+          ticket_id: string
+          user_id?: string | null
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          is_internal?: boolean
+          ticket_id?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ticket_comments_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "tickets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ticket_comments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tickets: {
+        Row: {
+          assigned_to: string | null
+          business_unit: Database["public"]["Enums"]["business_unit"]
+          category_id: string | null
+          channel: Database["public"]["Enums"]["ticket_channel"]
+          closed_at: string | null
+          created_at: string
+          created_by: string | null
+          customer_id: string | null
+          deleted_at: string | null
+          description: string | null
+          first_response_at: string | null
+          id: string
+          location_id: string | null
+          priority: Database["public"]["Enums"]["priority_level"]
+          resolution: string | null
+          resolution_category: string | null
+          resolved_at: string | null
+          satisfaction: number | null
+          sla_resolve_due: string | null
+          sla_response_due: string | null
+          status: Database["public"]["Enums"]["ticket_status"]
+          subject: string
+          subscription_id: string | null
+          ticket_number: string | null
+          updated_at: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          business_unit?: Database["public"]["Enums"]["business_unit"]
+          category_id?: string | null
+          channel?: Database["public"]["Enums"]["ticket_channel"]
+          closed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          customer_id?: string | null
+          deleted_at?: string | null
+          description?: string | null
+          first_response_at?: string | null
+          id?: string
+          location_id?: string | null
+          priority?: Database["public"]["Enums"]["priority_level"]
+          resolution?: string | null
+          resolution_category?: string | null
+          resolved_at?: string | null
+          satisfaction?: number | null
+          sla_resolve_due?: string | null
+          sla_response_due?: string | null
+          status?: Database["public"]["Enums"]["ticket_status"]
+          subject: string
+          subscription_id?: string | null
+          ticket_number?: string | null
+          updated_at?: string
+        }
+        Update: {
+          assigned_to?: string | null
+          business_unit?: Database["public"]["Enums"]["business_unit"]
+          category_id?: string | null
+          channel?: Database["public"]["Enums"]["ticket_channel"]
+          closed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          customer_id?: string | null
+          deleted_at?: string | null
+          description?: string | null
+          first_response_at?: string | null
+          id?: string
+          location_id?: string | null
+          priority?: Database["public"]["Enums"]["priority_level"]
+          resolution?: string | null
+          resolution_category?: string | null
+          resolved_at?: string | null
+          satisfaction?: number | null
+          sla_resolve_due?: string | null
+          sla_response_due?: string | null
+          status?: Database["public"]["Enums"]["ticket_status"]
+          subject?: string
+          subscription_id?: string | null
+          ticket_number?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tickets_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tickets_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "ticket_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tickets_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tickets_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tickets_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "v_customer_balances"
+            referencedColumns: ["customer_id"]
+          },
+          {
+            foreignKeyName: "tickets_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tickets_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "subscriptions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tickets_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "v_subscriptions_expiring"
             referencedColumns: ["id"]
           },
         ]
@@ -1483,6 +1970,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "vouchers_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "v_customer_balances"
+            referencedColumns: ["customer_id"]
+          },
+          {
             foreignKeyName: "vouchers_location_id_fkey"
             columns: ["location_id"]
             isOneToOne: false
@@ -1514,6 +2008,60 @@ export type Database = {
       }
     }
     Views: {
+      v_customer_balances: {
+        Row: {
+          balance_due: number | null
+          customer_id: string | null
+          invoiced: number | null
+          paid: number | null
+        }
+        Relationships: []
+      }
+      v_invoice_aging: {
+        Row: {
+          bucket: string | null
+          business_unit: Database["public"]["Enums"]["business_unit"] | null
+          customer_id: string | null
+          due_date: string | null
+          id: string | null
+          invoice_number: string | null
+          outstanding: number | null
+        }
+        Insert: {
+          bucket?: never
+          business_unit?: Database["public"]["Enums"]["business_unit"] | null
+          customer_id?: string | null
+          due_date?: string | null
+          id?: string | null
+          invoice_number?: string | null
+          outstanding?: never
+        }
+        Update: {
+          bucket?: never
+          business_unit?: Database["public"]["Enums"]["business_unit"] | null
+          customer_id?: string | null
+          due_date?: string | null
+          id?: string | null
+          invoice_number?: string | null
+          outstanding?: never
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoices_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoices_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "v_customer_balances"
+            referencedColumns: ["customer_id"]
+          },
+        ]
+      }
       v_subscriptions_expiring: {
         Row: {
           auto_renew: boolean | null
@@ -1555,6 +2103,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "customers"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "subscriptions_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "v_customer_balances"
+            referencedColumns: ["customer_id"]
           },
           {
             foreignKeyName: "subscriptions_location_id_fkey"
@@ -1623,6 +2178,19 @@ export type Database = {
         }
         Returns: string
       }
+      fn_recalc_invoice: { Args: { p_invoice_id: string }; Returns: undefined }
+      fn_record_payment: {
+        Args: {
+          p_allocations?: Json
+          p_amount: number
+          p_customer_id: string
+          p_location_id?: string
+          p_method: Database["public"]["Enums"]["payment_method"]
+          p_notes?: string
+          p_reference?: string
+        }
+        Returns: string
+      }
       fn_renew_subscription: {
         Args: {
           p_amount?: number
@@ -1631,6 +2199,14 @@ export type Database = {
           p_subscription_id: string
         }
         Returns: Json
+      }
+      fn_reopen_ticket: {
+        Args: { p_reason: string; p_ticket_id: string }
+        Returns: undefined
+      }
+      fn_resolve_ticket: {
+        Args: { p_category: string; p_note: string; p_ticket_id: string }
+        Returns: undefined
       }
       fn_resume_subscription: {
         Args: { p_subscription_id: string }
