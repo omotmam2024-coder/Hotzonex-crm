@@ -11,6 +11,14 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
+      // The default auto-injected registerSW.js only calls
+      // navigator.serviceWorker.register() once — it never checks for a
+      // newer service worker or reloads the page when one activates, so an
+      // already-open tab (or even a fresh reload, depending on browser SW
+      // update timing) can keep serving a stale bundle indefinitely after a
+      // deploy. injectRegister: false + the explicit registerSW() call in
+      // main.tsx replaces that with a real check-and-reload.
+      injectRegister: false,
       includeAssets: ['favicon.svg', 'apple-touch-icon.png', 'offline.html'],
       manifest: {
         name: 'Hotzonex CRM',
