@@ -69,6 +69,7 @@ interface InvoiceFormDialogProps {
   onOpenChange: (open: boolean) => void
   presetCustomer?: CustomerOption
   defaultBusinessUnit?: BusinessUnit
+  invoiceId?: string
 }
 
 function today() {
@@ -80,12 +81,13 @@ function in14Days() {
   return format(d, 'yyyy-MM-dd')
 }
 
-export function InvoiceFormDialog({ open, onOpenChange, presetCustomer, defaultBusinessUnit }: InvoiceFormDialogProps) {
+export function InvoiceFormDialog({ open, onOpenChange, presetCustomer, defaultBusinessUnit, invoiceId }: InvoiceFormDialogProps) {
   const { profile } = useAuth()
   const queryClient = useQueryClient()
   const { data: locations } = useLocations()
   const { data: plans } = useServicePlans(true)
   const [customer, setCustomer] = useState<CustomerOption | null>(presetCustomer ?? null)
+  const isEdit = !!invoiceId
 
   const defaults: FormValues = {
     businessUnit: defaultBusinessUnit ?? (profile?.business_units[0] as BusinessUnit) ?? 'wifi',
@@ -112,12 +114,56 @@ export function InvoiceFormDialog({ open, onOpenChange, presetCustomer, defaultB
   const items = watch('items')
 
   useEffect(() => {
-    if (open) {
+    if (!open) return
+
+    if (!invoiceId) {
       reset(defaults)
       setCustomer(presetCustomer ?? null)
+      return
+    }
+
+    let cancelled = false
+    async function load() {
+      const [{ data: inv, error: invError }, { data: itemRows, error: itemsError }] = await Promise.all([
+        supabase
+          .from('invoices')
+          .select('*, customers(id, display_name, phone_primary, customer_code)')
+          .eq('id', invoiceId!)
+          .single(),
+        supabase.from('invoice_items').select('*').eq('invoice_id', invoiceId!).order('sort_order'),
+      ])
+      if (cancelled) return
+      if (invError || !inv) {
+        toast.error(invError?.message ?? 'Could not load invoice')
+        return
+      }
+      setCustomer(inv.customers ?? null)
+      reset({
+        businessUnit: inv.business_unit,
+        locationId: inv.location_id,
+        currency: inv.currency,
+        issueDate: inv.issue_date,
+        dueDate: inv.due_date,
+        notes: inv.notes ?? '',
+        terms: inv.terms ?? '',
+        items:
+          !itemsError && itemRows && itemRows.length > 0
+            ? itemRows.map((it) => ({
+                planId: it.plan_id,
+                description: it.description,
+                quantity: it.quantity,
+                unitPrice: it.unit_price,
+                discount: it.discount,
+              }))
+            : defaults.items,
+      })
+    }
+    void load()
+    return () => {
+      cancelled = true
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open])
+  }, [open, invoiceId])
 
   const total = items?.reduce((sum, it) => sum + Math.max(it.quantity * it.unitPrice - it.discount, 0), 0) ?? 0
 
@@ -126,6 +172,41 @@ export function InvoiceFormDialog({ open, onOpenChange, presetCustomer, defaultB
       toast.error('Pick a customer')
       return
     }
+
+    if (isEdit && invoiceId) {
+      // The RPC's location/notes/terms columns are nullable in Postgres, but
+      // generate_typescript_types doesn't infer that for function
+      // parameters — these `as string` casts just match what the database
+      // actually accepts.
+      const { error } = await supabase.rpc('fn_update_invoice', {
+        p_invoice_id: invoiceId,
+        p_customer_id: customer.id,
+        p_business_unit: values.businessUnit,
+        p_location_id: values.locationId as string,
+        p_currency: values.currency,
+        p_issue_date: values.issueDate,
+        p_due_date: values.dueDate,
+        p_notes: (values.notes.trim() || null) as string,
+        p_terms: (values.terms.trim() || null) as string,
+        p_items: values.items.map((it) => ({
+          plan_id: it.planId ?? '',
+          description: it.description.trim(),
+          quantity: it.quantity,
+          unit_price: it.unitPrice,
+          discount: it.discount,
+        })),
+      })
+      if (error) {
+        toast.error(error.message)
+        return
+      }
+      toast.success('Invoice updated')
+      await queryClient.invalidateQueries({ queryKey: ['invoices'] })
+      await queryClient.invalidateQueries({ queryKey: ['invoice_items', invoiceId] })
+      onOpenChange(false)
+      return
+    }
+
     const { data: invoice, error } = await supabase
       .from('invoices')
       .insert({
@@ -173,7 +254,7 @@ export function InvoiceFormDialog({ open, onOpenChange, presetCustomer, defaultB
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>New invoice</DialogTitle>
+          <DialogTitle>{isEdit ? 'Edit invoice' : 'New invoice'}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="flex max-h-[75vh] flex-col gap-4 overflow-y-auto">
           {!presetCustomer && (
@@ -349,7 +430,7 @@ export function InvoiceFormDialog({ open, onOpenChange, presetCustomer, defaultB
               Cancel
             </Button>
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? 'Creating…' : 'Create invoice'}
+              {isSubmitting ? 'Saving…' : isEdit ? 'Save changes' : 'Create invoice'}
             </Button>
           </DialogFooter>
         </form>

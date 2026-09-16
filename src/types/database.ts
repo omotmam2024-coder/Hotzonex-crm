@@ -1,5 +1,3 @@
-// Generated from the Supabase schema (supabase gen types typescript). Do not hand-edit.
-
 export type Json =
   | string
   | number
@@ -3383,6 +3381,21 @@ export type Database = {
           p_status: Database["public"]["Enums"]["installation_status"]
         }
         Returns: Json
+      }
+      fn_update_invoice: {
+        Args: {
+          p_business_unit: Database["public"]["Enums"]["business_unit"]
+          p_currency: Database["public"]["Enums"]["currency_code"]
+          p_customer_id: string
+          p_due_date: string
+          p_invoice_id: string
+          p_issue_date: string
+          p_items: Json
+          p_location_id: string
+          p_notes: string
+          p_terms: string
+        }
+        Returns: undefined
       }
       fn_void_voucher: {
         Args: { p_reason: string; p_voucher_id: string }

@@ -53,6 +53,10 @@
   }
 }
 
+.invoice-print {
+  display: none;
+}
+
 @media print {
   .no-print {
     display: none !important;
@@ -80,5 +84,29 @@
   @page {
     size: 58mm auto;
     margin: 0;
+  }
+
+  /*
+   * Full-page invoice printing: hide everything except the invoice sheet.
+   * The @page rule above sizes the page for 58mm thermal receipts, which
+   * would clip a full itemized invoice — the invoice's print trigger
+   * (InvoiceDrawer's printInvoice()) injects its own @page override just
+   * for that call instead of changing this shared rule.
+   */
+  .invoice-print,
+  .invoice-print * {
+    visibility: visible;
+  }
+  .invoice-print {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 12mm;
+    color: #000;
+    background: #fff;
+    font-size: 12px;
+    line-height: 1.5;
   }
 }

@@ -1,5 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query'
-import { PlusIcon, Trash2Icon } from 'lucide-react'
+import { PencilIcon, PlusIcon, PrinterIcon, Trash2Icon } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -10,9 +10,12 @@ import { Textarea } from '@/components/ui/textarea'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import { useAuth } from '@/hooks/useAuth'
+import { useSettingValue } from '@/hooks/useSettingValue'
 import { can } from '@/lib/permissions'
 import { formatDate, formatMoney } from '@/lib/format'
 import { supabase } from '@/lib/supabase'
+import { InvoiceFormDialog } from './InvoiceFormDialog'
+import { PrintableInvoice } from './PrintableInvoice'
 import { useInvoiceDetail, useInvoiceItems } from './useInvoices'
 
 interface InvoiceDrawerProps {
@@ -22,18 +25,39 @@ interface InvoiceDrawerProps {
 
 const EDITABLE_STATUSES = ['draft', 'sent']
 
+function printInvoice() {
+  // The shared print stylesheet's @page rule is sized for 58mm thermal
+  // receipts; injecting a scoped override just for this print call lets a
+  // full itemized invoice print at normal page size without changing that
+  // shared rule (which would break receipt printing elsewhere). window.print()
+  // doesn't reliably block until the print dialog closes across browsers, so
+  // the override is removed on the 'afterprint' event rather than right after
+  // the call — removing it too early can let pagination read the old rule.
+  const style = document.createElement('style')
+  style.textContent = '@page { size: auto; margin: 14mm; }'
+  document.head.appendChild(style)
+  function cleanup() {
+    style.remove()
+    window.removeEventListener('afterprint', cleanup)
+  }
+  window.addEventListener('afterprint', cleanup)
+  window.print()
+}
+
 export function InvoiceDrawer({ invoiceId, onClose }: InvoiceDrawerProps) {
   const { profile } = useAuth()
   const queryClient = useQueryClient()
   const { data: invoice, refetch } = useInvoiceDetail(invoiceId)
   const { data: items, refetch: refetchItems } = useInvoiceItems(invoiceId)
-  const [voidOpen, setVoidOpen] = useState(false)
-  const [voiding, setVoiding] = useState(false)
+  const { data: company } = useSettingValue('company', { name: 'Hotzonex' } as { name: string })
+  const [editOpen, setEditOpen] = useState(false)
+  const [deleteOpen, setDeleteOpen] = useState(false)
+  const [deleting, setDeleting] = useState(false)
   const [newLine, setNewLine] = useState({ description: '', quantity: '1', unitPrice: '0', discount: '0' })
   const [addingLine, setAddingLine] = useState(false)
 
   const canWrite = can(profile, 'create')
-  const canVoid = can(profile, 'void')
+  const canDelete = can(profile, 'delete')
   const editable = !!invoice && EDITABLE_STATUSES.includes(invoice.status)
 
   async function invalidateAll() {
@@ -92,18 +116,19 @@ export function InvoiceDrawer({ invoiceId, onClose }: InvoiceDrawerProps) {
     await invalidateAll()
   }
 
-  async function voidInvoice() {
+  async function deleteInvoice() {
     if (!invoiceId) return
-    setVoiding(true)
-    const { error } = await supabase.from('invoices').update({ status: 'void' }).eq('id', invoiceId)
-    setVoiding(false)
+    setDeleting(true)
+    const { error } = await supabase.from('invoices').update({ deleted_at: new Date().toISOString() }).eq('id', invoiceId)
+    setDeleting(false)
     if (error) {
       toast.error(error.message)
       return
     }
-    toast.success('Invoice voided')
-    setVoidOpen(false)
-    await invalidateAll()
+    toast.success('Invoice deleted')
+    setDeleteOpen(false)
+    await queryClient.invalidateQueries({ queryKey: ['invoices'] })
+    onClose()
   }
 
   return (
@@ -254,22 +279,37 @@ export function InvoiceDrawer({ invoiceId, onClose }: InvoiceDrawerProps) {
               </div>
             )}
 
-            {canWrite && canVoid && invoice.status !== 'void' && invoice.status !== 'paid' && (
-              <Button variant="destructive" className="mt-2" onClick={() => setVoidOpen(true)}>
-                Void invoice
+            <div className="flex flex-wrap gap-2 border-t border-border pt-3 no-print">
+              <Button variant="outline" onClick={printInvoice}>
+                <PrinterIcon className="size-4" /> Print
               </Button>
-            )}
+              {canWrite && editable && (
+                <Button variant="outline" onClick={() => setEditOpen(true)}>
+                  <PencilIcon className="size-4" /> Edit
+                </Button>
+              )}
+              {canDelete && (
+                <Button variant="destructive" onClick={() => setDeleteOpen(true)}>
+                  <Trash2Icon className="size-4" /> Delete
+                </Button>
+              )}
+            </div>
+
+            {items && <PrintableInvoice companyName={company?.name ?? 'Hotzonex'} invoice={invoice} items={items} />}
 
             <ConfirmDialog
-              open={voidOpen}
-              onOpenChange={setVoidOpen}
-              title="Void this invoice?"
-              description={`${invoice.invoice_number} will no longer be collectible. This cannot be undone.`}
-              confirmLabel="Void invoice"
+              open={deleteOpen}
+              onOpenChange={setDeleteOpen}
+              title="Delete this invoice?"
+              description={`${invoice.invoice_number} will be removed from every list and report. Payments already recorded against it are kept.`}
+              requireTypedConfirmation={invoice.invoice_number ?? undefined}
+              confirmLabel="Delete invoice"
               variant="destructive"
-              loading={voiding}
-              onConfirm={voidInvoice}
+              loading={deleting}
+              onConfirm={deleteInvoice}
             />
+
+            <InvoiceFormDialog open={editOpen} onOpenChange={setEditOpen} invoiceId={invoiceId ?? undefined} />
           </>
         )}
       </SheetContent>
