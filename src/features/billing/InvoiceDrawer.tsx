@@ -11,6 +11,7 @@ import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import { useAuth } from '@/hooks/useAuth'
 import { useSettingValue } from '@/hooks/useSettingValue'
+import { APP_NAME } from '@/lib/appName'
 import { can } from '@/lib/permissions'
 import { formatDate, formatMoney } from '@/lib/format'
 import { supabase } from '@/lib/supabase'
@@ -49,7 +50,7 @@ export function InvoiceDrawer({ invoiceId, onClose }: InvoiceDrawerProps) {
   const queryClient = useQueryClient()
   const { data: invoice, refetch } = useInvoiceDetail(invoiceId)
   const { data: items, refetch: refetchItems } = useInvoiceItems(invoiceId)
-  const { data: company } = useSettingValue('company', { name: 'Hotzonex' } as { name: string })
+  const { data: company } = useSettingValue('company', { name: APP_NAME } as { name: string })
   const [editOpen, setEditOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [deleting, setDeleting] = useState(false)
@@ -295,7 +296,7 @@ export function InvoiceDrawer({ invoiceId, onClose }: InvoiceDrawerProps) {
               )}
             </div>
 
-            {items && <PrintableInvoice companyName={company?.name ?? 'Hotzonex'} invoice={invoice} items={items} />}
+            {items && <PrintableInvoice companyName={company?.name || APP_NAME} invoice={invoice} items={items} />}
 
             <ConfirmDialog
               open={deleteOpen}

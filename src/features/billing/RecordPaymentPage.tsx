@@ -19,6 +19,7 @@ import { CustomerPicker } from '@/components/shared/CustomerPicker'
 import { Receipt } from '@/components/shared/Receipt'
 import { useAuth } from '@/hooks/useAuth'
 import { useSettingValue } from '@/hooks/useSettingValue'
+import { APP_NAME } from '@/lib/appName'
 import { formatDate, formatDateTime, formatMoney, whatsappLink } from '@/lib/format'
 import { supabase } from '@/lib/supabase'
 import type { Database } from '@/types/database'
@@ -46,7 +47,7 @@ interface PaidReceipt {
 export function RecordPaymentPage() {
   const { profile } = useAuth()
   const queryClient = useQueryClient()
-  const { data: company } = useSettingValue('company', { name: 'Hotzonex' } as { name: string })
+  const { data: company } = useSettingValue('company', { name: APP_NAME } as { name: string })
   const [customer, setCustomer] = useState<CustomerOption | null>(null)
   const [amount, setAmount] = useState('')
   const [method, setMethod] = useState<PaymentMethod>('cash')
@@ -132,7 +133,7 @@ export function RecordPaymentPage() {
 
   function sendWhatsapp() {
     if (!receipt?.customerPhone) return
-    const message = `Thank you! Receipt ${receipt.paymentNumber}\nAmount: ${formatMoney(receipt.amount, receipt.currency)}${receipt.invoiceNumbers.length ? `\nInvoices: ${receipt.invoiceNumbers.join(', ')}` : ''}\n— ${company?.name ?? 'Hotzonex'}`
+    const message = `Thank you! Receipt ${receipt.paymentNumber}\nAmount: ${formatMoney(receipt.amount, receipt.currency)}${receipt.invoiceNumbers.length ? `\nInvoices: ${receipt.invoiceNumbers.join(', ')}` : ''}\n— ${company?.name || APP_NAME}`
     window.open(whatsappLink(receipt.customerPhone, message), '_blank', 'noreferrer')
   }
 
@@ -230,7 +231,7 @@ export function RecordPaymentPage() {
           <CardContent className="flex flex-col items-center gap-3 pt-4">
             <Receipt
               ref={receiptRef}
-              companyName={company?.name ?? 'Hotzonex'}
+              companyName={company?.name || APP_NAME}
               title="Payment Receipt"
               number={receipt.paymentNumber}
               date={formatDateTime(receipt.paidAt)}
@@ -241,7 +242,7 @@ export function RecordPaymentPage() {
               ]}
               amountLabel="Amount"
               amountValue={formatMoney(receipt.amount, receipt.currency)}
-              footer="Thank you for choosing Hotzonex"
+              footer={`Thank you for choosing ${company?.name || APP_NAME}`}
             />
             <div className="flex gap-2 no-print">
               <Button variant="outline" onClick={printReceipt}>

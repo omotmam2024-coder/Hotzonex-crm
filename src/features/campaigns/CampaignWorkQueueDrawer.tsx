@@ -14,6 +14,8 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sh
 import { EmptyState } from '@/components/shared/EmptyState'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import { useAuth } from '@/hooks/useAuth'
+import { useSettingValue } from '@/hooks/useSettingValue'
+import { APP_NAME } from '@/lib/appName'
 import { renderTemplate, SAMPLE_TEMPLATE_VALUES } from '@/lib/messageTemplate'
 import { formatPhoneLocal, whatsappLink } from '@/lib/format'
 import { supabase } from '@/lib/supabase'
@@ -31,6 +33,7 @@ interface CampaignWorkQueueDrawerProps {
 export function CampaignWorkQueueDrawer({ campaign, onClose }: CampaignWorkQueueDrawerProps) {
   const { profile } = useAuth()
   const queryClient = useQueryClient()
+  const { data: company } = useSettingValue('company', { name: APP_NAME } as { name: string })
 
   const audienceFilter: AudienceFilter = campaign?.audience_filter ?? {}
   const { data: members, isLoading: membersLoading } = useAudienceMembers(audienceFilter, !!campaign)
@@ -76,7 +79,7 @@ export function CampaignWorkQueueDrawer({ campaign, onClose }: CampaignWorkQueue
     // the sender can edit in the wa.me compose box before hitting send.
     const body = template
       ? renderTemplate(template.body, { ...SAMPLE_TEMPLATE_VALUES, customer_name: member.display_name ?? 'there' })
-      : `Hello ${member.display_name ?? 'there'}, this is Hotzonex.`
+      : `Hello ${member.display_name ?? 'there'}, this is ${company?.name || APP_NAME}.`
 
     window.open(whatsappLink(phone, body), '_blank', 'noreferrer')
 

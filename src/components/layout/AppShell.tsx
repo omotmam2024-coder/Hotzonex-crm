@@ -16,6 +16,8 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sh
 import { useActivityModal } from '@/features/activities/ActivityModalProvider'
 import { NotificationsBell } from '@/features/notifications/NotificationsBell'
 import { useAuth } from '@/hooks/useAuth'
+import { useSettingValue } from '@/hooks/useSettingValue'
+import { APP_NAME } from '@/lib/appName'
 import { can } from '@/lib/permissions'
 import { cn } from '@/lib/utils'
 import { GlobalSearch } from './GlobalSearch'
@@ -46,6 +48,9 @@ export function AppShell() {
   const location = useLocation()
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [moreOpen, setMoreOpen] = useState(false)
+  const { data: company } = useSettingValue('company', { name: APP_NAME } as { name: string })
+  const companyName = company?.name || APP_NAME
+  const companyInitial = companyName.charAt(0).toUpperCase()
 
   useEffect(() => {
     rememberRoute(location.pathname)
@@ -68,9 +73,9 @@ export function AppShell() {
       >
         <div className="flex h-14 items-center gap-2 border-b border-border px-4">
           <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-accent/15 text-sm font-bold text-accent">
-            H
+            {companyInitial}
           </div>
-          {!sidebarCollapsed && <span className="truncate text-sm font-semibold">Hotzonex CRM</span>}
+          {!sidebarCollapsed && <span className="truncate text-sm font-semibold">{companyName}</span>}
         </div>
 
         <nav className="flex flex-1 flex-col gap-1 p-2">
@@ -110,9 +115,9 @@ export function AppShell() {
         <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center justify-between gap-3 border-b border-border bg-surface/95 px-4 backdrop-blur no-print">
           <Link to="/" className="flex items-center gap-2 md:hidden">
             <div className="flex size-8 items-center justify-center rounded-lg bg-accent/15 text-sm font-bold text-accent">
-              H
+              {companyInitial}
             </div>
-            <span className="text-sm font-semibold">Hotzonex CRM</span>
+            <span className="text-sm font-semibold">{companyName}</span>
           </Link>
           <div className="hidden md:block" />
 

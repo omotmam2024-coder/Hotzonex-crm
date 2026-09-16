@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { Navigate, useLocation } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
+import { APP_NAME } from '@/lib/appName'
 
 const LAST_ROUTE_KEY = 'hzx.lastRoute'
 
@@ -29,9 +30,9 @@ function FullPageLoader() {
     <div className="flex min-h-dvh items-center justify-center bg-bg">
       <div className="flex flex-col items-center gap-3">
         <div className="flex size-12 items-center justify-center rounded-2xl bg-accent/15 text-2xl font-bold text-accent animate-pulse">
-          H
+          {APP_NAME.charAt(0).toUpperCase()}
         </div>
-        <p className="text-sm text-text-muted">Loading Hotzonex CRM…</p>
+        <p className="text-sm text-text-muted">Loading…</p>
       </div>
     </div>
   )

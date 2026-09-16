@@ -18,6 +18,7 @@ import { CustomerPicker } from '@/components/shared/CustomerPicker'
 import { Receipt } from '@/components/shared/Receipt'
 import { useAuth } from '@/hooks/useAuth'
 import { useSettingValue } from '@/hooks/useSettingValue'
+import { APP_NAME } from '@/lib/appName'
 import { formatDateTime, formatMoney, whatsappLink } from '@/lib/format'
 import { supabase } from '@/lib/supabase'
 import type { Database } from '@/types/database'
@@ -54,7 +55,7 @@ interface SoldReceipt {
 export function SellVoucherPage() {
   const { profile } = useAuth()
   const queryClient = useQueryClient()
-  const { data: company } = useSettingValue('company', { name: 'Hotzonex' } as { name: string })
+  const { data: company } = useSettingValue('company', { name: APP_NAME } as { name: string })
   const [codeInput, setCodeInput] = useState('')
   const [voucher, setVoucher] = useState<VoucherLookup | null>(null)
   const [looking, setLooking] = useState(false)
@@ -138,7 +139,7 @@ export function SellVoucherPage() {
 
   function sendWhatsapp() {
     if (!receipt?.customerPhone) return
-    const message = `Thank you! Receipt ${receipt.paymentNumber}\nVoucher: ${receipt.voucherCode}\nPlan: ${receipt.planName}\nAmount: ${formatMoney(receipt.price, 'SSP')}\n— ${company?.name ?? 'Hotzonex'}`
+    const message = `Thank you! Receipt ${receipt.paymentNumber}\nVoucher: ${receipt.voucherCode}\nPlan: ${receipt.planName}\nAmount: ${formatMoney(receipt.price, 'SSP')}\n— ${company?.name || APP_NAME}`
     window.open(whatsappLink(receipt.customerPhone, message), '_blank', 'noreferrer')
   }
 
@@ -220,7 +221,7 @@ export function SellVoucherPage() {
           <CardContent className="flex flex-col items-center gap-3 pt-4">
             <Receipt
               ref={receiptRef}
-              companyName={company?.name ?? 'Hotzonex'}
+              companyName={company?.name || APP_NAME}
               title="Voucher Receipt"
               number={receipt.paymentNumber}
               date={formatDateTime(receipt.soldAt)}
@@ -232,7 +233,7 @@ export function SellVoucherPage() {
               ]}
               amountLabel="Total"
               amountValue={formatMoney(receipt.price, receipt.currency)}
-              footer="Thank you for choosing Hotzonex"
+              footer={`Thank you for choosing ${company?.name || APP_NAME}`}
             />
             <div className="flex gap-2 no-print">
               <Button variant="outline" onClick={printReceipt}>

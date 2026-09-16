@@ -6,6 +6,7 @@ import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { APP_NAME } from '@/lib/appName'
 import { supabase } from '@/lib/supabase'
 import { AuthLayout } from './AuthLayout'
 
@@ -92,7 +93,7 @@ export function FirstRunSetupPage() {
         <div>
           <h2 className="text-base font-semibold text-text">Create the owner account</h2>
           <p className="text-sm text-text-muted">
-            No one has set up Hotzonex CRM yet. This first account gets the <span className="text-text">owner</span> role and
+            No one has set up {APP_NAME} yet. This first account gets the <span className="text-text">owner</span> role and
             can invite the rest of the team afterwards.
           </p>
         </div>

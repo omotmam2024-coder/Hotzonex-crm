@@ -7,8 +7,11 @@ import App from './App.tsx'
 import { Toaster } from '@/components/ui/sonner'
 import { ActivityModalProvider } from '@/features/activities/ActivityModalProvider'
 import { useAuth, AuthProvider } from '@/hooks/useAuth'
+import { APP_NAME } from '@/lib/appName'
 import { queryClient } from '@/lib/queryClient'
 import './styles/index.css'
+
+document.title = APP_NAME
 
 // The default auto-injected registerSW.js (now disabled — see vite.config.ts)
 // only ever registers the service worker once; it never notices a newer one
