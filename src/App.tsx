@@ -25,6 +25,7 @@ const ServicesHubPage = lazy(() => import('@/features/services/ServicesHubPage')
 const RefreshmentHubPage = lazy(() => import('@/features/refreshment/RefreshmentHubPage').then((m) => ({ default: m.RefreshmentHubPage })))
 const CampaignsHubPage = lazy(() => import('@/features/campaigns/CampaignsHubPage').then((m) => ({ default: m.CampaignsHubPage })))
 const ReportsHubPage = lazy(() => import('@/features/reports/ReportsHubPage').then((m) => ({ default: m.ReportsHubPage })))
+const UsersPage = lazy(() => import('@/features/admin/UsersPage').then((m) => ({ default: m.UsersPage })))
 
 function RouteFallback() {
   return (
@@ -64,6 +65,7 @@ function App() {
             <Route path="/refreshment" element={<RefreshmentHubPage />} />
             <Route path="/campaigns" element={<CampaignsHubPage />} />
             <Route path="/reports" element={<ReportsHubPage />} />
+            <Route path="/admin" element={<UsersPage />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />

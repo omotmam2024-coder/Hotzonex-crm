@@ -91,7 +91,7 @@ where n.nspname = 'public' and c.relkind = 'r' and c.relrowsecurity = false;
 
 ## First run
 
-No `owner` account exists until you create one. Open the app — with zero accounts, it routes straight to **Create the owner account** (`/setup`). That account is hard-assigned the `owner` role server-side (the signup trigger ignores any client-supplied role and only ever grants `owner` to the very first account; everyone after starts as `viewer` until an admin promotes them). After that, self-service signup no longer creates useful accounts on its own — invite staff from Admin → Users (arriving in a later phase) or promote a `viewer` account by editing their `profiles.role` as an admin/owner.
+No `owner` account exists until you create one. Open the app — with zero accounts, it routes straight to **Create the owner account** (`/setup`). That account is hard-assigned the `owner` role server-side (the signup trigger ignores any client-supplied role and only ever grants `owner` to the very first account; everyone after starts as `viewer` until an admin promotes them). After that, self-service signup no longer creates useful accounts on its own — invite staff from **Admin → Users** (admin/owner only) or promote a `viewer` account from that same screen.
 
 ### Roles
 
@@ -116,13 +116,17 @@ Admin/owner only. `Settings → Locations` (or directly: insert a row into `loca
 
 Admin/owner only, via `Settings → Service Plans` (or insert into `service_plans`: `business_unit`, `name`, `code` (unique), `price_ssp`, and either `duration_hours` for a voucher plan or leave it null for a subscription plan). Set `reorder_level` to whatever voucher stock count should trigger the low-stock warning on the Vouchers screen.
 
-### Promoting a user / inviting staff
+### Inviting staff / promoting a user
 
-There's no self-service "invite" flow yet — every account starts as `viewer` on signup (except the very first, which becomes `owner` automatically). To promote someone: have them create an account, then as an admin/owner update their `profiles.role` (and `location_ids` / `business_units` if they should be scoped to specific locations or units) either from a future Admin → Users screen or directly:
+Admin/owner only, via **Admin → Users** (`/admin`) — hidden from the nav entirely for everyone else. **Invite staff** sends an email invite (a link to set a password) and lets you set their role, business units, and locations in the same step; the account is created via a dedicated Edge Function (`admin-invite-user`) since creating an `auth.users` row isn't possible from the browser's anon-key client — the function itself re-checks the caller is admin/owner server-side before touching anything, the same as every other privileged action in this app. Existing users can be edited from the same list: change role/units/locations, or deactivate/reactivate (an admin can't deactivate their own account from here, and the sole `owner` role can't be reassigned from the UI — both are guarded in the dialog, not just hidden).
+
+Without the UI (e.g. scripting a bulk change), the equivalent direct update is:
 
 ```sql
 update public.profiles set role = 'agent', location_ids = array['<location-uuid>'] where email = 'someone@example.com';
 ```
+
+Inviting a brand-new account still needs the Edge Function (or the Supabase dashboard's own **Authentication → Users → Invite** action) — there's no way to create an `auth.users` row from plain SQL.
 
 ### Backups
 

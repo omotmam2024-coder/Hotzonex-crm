@@ -8,6 +8,7 @@ import {
   ListTodoIcon,
   MegaphoneIcon,
   ReceiptTextIcon,
+  ShieldIcon,
   TicketPercentIcon,
   UsersIcon,
   WifiIcon,
@@ -20,6 +21,8 @@ export interface NavItem {
   icon: LucideIcon
   /** Shown directly in the mobile bottom tab bar (max ~4); everything else lives behind "More". */
   primary?: boolean
+  /** Hidden from nav entirely unless can(profile, 'manage_users') — the page itself still gates on this too. */
+  adminOnly?: boolean
 }
 
 // Grows as each build phase lands its screens (Tickets, Billing, … per §6 of
@@ -39,4 +42,5 @@ export const NAV_ITEMS: NavItem[] = [
   { label: 'Refreshment', path: '/refreshment', icon: CupSodaIcon },
   { label: 'Campaigns', path: '/campaigns', icon: MegaphoneIcon },
   { label: 'Reports', path: '/reports', icon: BarChart3Icon },
+  { label: 'Admin', path: '/admin', icon: ShieldIcon, adminOnly: true },
 ]

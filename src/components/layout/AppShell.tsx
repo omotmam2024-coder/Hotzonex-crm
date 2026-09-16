@@ -16,6 +16,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sh
 import { useActivityModal } from '@/features/activities/ActivityModalProvider'
 import { NotificationsBell } from '@/features/notifications/NotificationsBell'
 import { useAuth } from '@/hooks/useAuth'
+import { can } from '@/lib/permissions'
 import { cn } from '@/lib/utils'
 import { GlobalSearch } from './GlobalSearch'
 import { OfflineBanner } from './OfflineBanner'
@@ -52,8 +53,9 @@ export function AppShell() {
 
   const displayName = profile?.full_name || profile?.email || 'You'
   const roleLabel = profile ? (ROLE_LABEL[profile.role] ?? profile.role) : ''
-  const primaryNavItems = NAV_ITEMS.filter((item) => item.primary)
-  const secondaryNavItems = NAV_ITEMS.filter((item) => !item.primary)
+  const visibleNavItems = NAV_ITEMS.filter((item) => !item.adminOnly || can(profile, 'manage_users'))
+  const primaryNavItems = visibleNavItems.filter((item) => item.primary)
+  const secondaryNavItems = visibleNavItems.filter((item) => !item.primary)
 
   return (
     <div className="flex min-h-dvh bg-bg text-text">
@@ -72,7 +74,7 @@ export function AppShell() {
         </div>
 
         <nav className="flex flex-1 flex-col gap-1 p-2">
-          {NAV_ITEMS.map((item) => (
+          {visibleNavItems.map((item) => (
             <NavLink
               key={item.path}
               to={item.path}
