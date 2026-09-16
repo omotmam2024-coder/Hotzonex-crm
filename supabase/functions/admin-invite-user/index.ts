@@ -17,11 +17,25 @@ const SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 const ROLES = ['admin', 'manager', 'agent', 'technician', 'viewer'] as const
 const UNITS = ['wifi', 'services', 'refreshment'] as const
 
+// The app (on vercel.app) and this function (on supabase.co) are different
+// origins, so supabase-js's functions.invoke() always sends a CORS preflight
+// OPTIONS request first — without these headers the browser blocks the real
+// POST from ever going out, and the invite silently fails client-side.
+const CORS_HEADERS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+}
+
 function json(body: unknown, status = 200) {
-  return new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } })
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
+  })
 }
 
 Deno.serve(async (req) => {
+  if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: CORS_HEADERS })
   if (req.method !== 'POST') return json({ error: 'Method not allowed' }, 405)
 
   const authHeader = req.headers.get('Authorization')
