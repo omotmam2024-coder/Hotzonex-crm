@@ -28,6 +28,18 @@ export function formatMoney(amount: number | string | null | undefined, currency
   return `SSP ${formatted}`
 }
 
+/**
+ * Formats a sum kept separate per currency (SSP and USD amounts can never
+ * just be added together) as one short string — e.g. a dashboard tile
+ * showing "SSP 45,000.00" normally, or "SSP 45,000.00 + $120.00" on the
+ * rare day both currencies are in play. Defaults to "SSP 0.00" when empty.
+ */
+export function formatMoneyTotals(totals: Partial<Record<CurrencyCode, number>>) {
+  const entries = (Object.entries(totals) as [CurrencyCode, number][]).filter(([, amount]) => amount !== 0)
+  if (entries.length === 0) return formatMoney(0, 'SSP')
+  return entries.map(([currency, amount]) => formatMoney(amount, currency)).join(' + ')
+}
+
 /** Absolute date display format locked to `15 Sep 2026`. */
 export function formatDate(value: string | Date | null | undefined) {
   if (!value) return '—'
