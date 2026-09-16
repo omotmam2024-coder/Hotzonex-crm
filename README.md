@@ -178,7 +178,7 @@ Deployed to Vercel from GitHub with preview deployments on branches. Build comma
 
 ## Known accepted risk
 
-`xlsx` (SheetJS) is a locked dependency (Excel export/import) with an upstream, unpatched prototype-pollution/ReDoS advisory (`npm audit`). It's used only for exporting data the app already trusts; the Customers CSV/Excel **import** feature (later phase) will size-limit and validate parsed rows before they touch the database rather than trusting the library's output blindly.
+`xlsx` (SheetJS) is a locked dependency (Excel export/import) with an upstream, unpatched prototype-pollution/ReDoS advisory (`npm audit`). Export usage is safe by construction (only ever writes data the app already trusts). Customers CSV/Excel **import** (`Customers → Import`) caps input at 5MB / 500 rows before it's even parsed, then validates every cell (enum values, phone/email format, required-field checks) and cross-checks phone numbers against existing customers before anything touches the database — an invalid or duplicate row is skipped with a reason shown in the preview, never silently written or silently overwritten.
 
 Supabase Auth's **leaked-password protection** (checks new passwords against HaveIBeenPwned) is off by default and hasn't been turned on — it's a one-click toggle in the Supabase dashboard under `Authentication → Policies`, not a code or migration change, so it's flagged here as a recommended follow-up rather than fixed in this repo.
 

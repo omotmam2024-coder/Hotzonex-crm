@@ -1,6 +1,6 @@
 import type { ColumnDef } from '@tanstack/react-table'
-import { PlusIcon, SearchIcon, UsersIcon } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { PlusIcon, SearchIcon, UploadIcon, UsersIcon } from 'lucide-react'
+import { lazy, Suspense, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -19,11 +19,21 @@ import { Pagination } from '@/components/shared/Pagination'
 import { PhoneActions } from '@/components/shared/PhoneActions'
 import { SkeletonRows } from '@/components/shared/SkeletonRows'
 import { StatusBadge } from '@/components/shared/StatusBadge'
+import { useAuth } from '@/hooks/useAuth'
 import { useDebounced } from '@/hooks/useDebounced'
 import { useProfiles } from '@/hooks/useProfiles'
 import { formatDate } from '@/lib/format'
+import { can } from '@/lib/permissions'
 import { CustomerFormDialog } from './CustomerFormDialog'
 import { type CustomersFilters, useCustomersList } from './useCustomersList'
+
+// The xlsx parsing library this dialog needs is sizeable — lazy-load it so
+// the Customers list (a primary nav page most staff hit constantly) never
+// pays for it unless someone actually opens Import, same as the export
+// tooling elsewhere in the app.
+const ImportCustomersDialog = lazy(() =>
+  import('./ImportCustomersDialog').then((m) => ({ default: m.ImportCustomersDialog })),
+)
 
 const UNIT_LABEL: Record<string, string> = { wifi: 'WiFi', services: 'Services', refreshment: 'Refreshment' }
 
@@ -41,12 +51,15 @@ interface CustomerRow {
 
 export function CustomersListPage() {
   const navigate = useNavigate()
+  const { profile } = useAuth()
+  const canWrite = can(profile, 'create')
   const [searchInput, setSearchInput] = useState('')
   const [businessUnit, setBusinessUnit] = useState<CustomersFilters['businessUnit']>('all')
   const [status, setStatus] = useState<CustomersFilters['status']>('all')
   const [ownerId, setOwnerId] = useState<CustomersFilters['ownerId']>('all')
   const [page, setPage] = useState(1)
   const [createOpen, setCreateOpen] = useState(false)
+  const [importOpen, setImportOpen] = useState(false)
 
   const debouncedSearch = useDebounced(searchInput, 350)
   const { data: profiles } = useProfiles()
@@ -107,9 +120,16 @@ export function CustomersListPage() {
       <div className="sticky top-14 z-20 flex flex-col gap-3 border-b border-border bg-bg p-4 no-print">
         <div className="flex items-center justify-between gap-3">
           <h1 className="text-xl font-semibold text-text">Customers</h1>
-          <Button onClick={() => setCreateOpen(true)}>
-            <PlusIcon /> New customer
-          </Button>
+          <div className="flex items-center gap-2">
+            {canWrite && (
+              <Button variant="outline" onClick={() => setImportOpen(true)}>
+                <UploadIcon /> Import
+              </Button>
+            )}
+            <Button onClick={() => setCreateOpen(true)}>
+              <PlusIcon /> New customer
+            </Button>
+          </div>
         </div>
 
         <div className="flex flex-col gap-2 sm:flex-row">
@@ -242,6 +262,11 @@ export function CustomersListPage() {
         onOpenChange={setCreateOpen}
         onSaved={(id) => navigate(`/customers/${id}`)}
       />
+      {importOpen && (
+        <Suspense fallback={null}>
+          <ImportCustomersDialog open={importOpen} onOpenChange={setImportOpen} />
+        </Suspense>
+      )}
     </div>
   )
 }
