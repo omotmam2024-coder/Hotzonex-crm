@@ -140,7 +140,8 @@ export function ProjectsPage() {
                     <StatusBadge status={p.status} />
                   </div>
                   <p className="text-xs text-text-muted">
-                    {p.customers?.display_name} · {p.due_date ? `Due ${formatDate(p.due_date)}` : 'No due date'}
+                    {p.customers?.display_name} · {p.due_date ? `Due ${formatDate(p.due_date)}` : 'No due date'} · Created{' '}
+                    {formatDate(p.created_at)}
                   </p>
                 </div>
                 <span className="shrink-0 text-sm text-text">{formatMoney(p.budget, p.currency)}</span>

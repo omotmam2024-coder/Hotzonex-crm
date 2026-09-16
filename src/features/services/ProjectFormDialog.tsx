@@ -55,6 +55,7 @@ interface ProjectFormDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   presetCustomer?: CustomerOption
+  projectId?: string
   onCreated?: (projectId: string) => void
 }
 
@@ -69,7 +70,8 @@ const DEFAULTS: FormValues = {
   description: '',
 }
 
-export function ProjectFormDialog({ open, onOpenChange, presetCustomer, onCreated }: ProjectFormDialogProps) {
+export function ProjectFormDialog({ open, onOpenChange, presetCustomer, projectId, onCreated }: ProjectFormDialogProps) {
+  const isEdit = !!projectId
   const { profile } = useAuth()
   const queryClient = useQueryClient()
   const { data: profiles } = useProfiles()
@@ -84,39 +86,58 @@ export function ProjectFormDialog({ open, onOpenChange, presetCustomer, onCreate
   } = useForm<FormValues>({ resolver: zodResolver(schema), defaultValues: { ...DEFAULTS, ownerId: profile?.id ?? null } })
 
   useEffect(() => {
-    if (open) {
+    if (!open) return
+    if (!isEdit) {
       reset({ ...DEFAULTS, ownerId: profile?.id ?? null })
       setCustomer(presetCustomer ?? null)
+      return
     }
+    void supabase
+      .from('projects')
+      .select('*, customers(id, display_name, phone_primary, customer_code)')
+      .eq('id', projectId)
+      .single()
+      .then(({ data }) => {
+        if (!data) return
+        reset({
+          name: data.name,
+          projectType: data.project_type,
+          startDate: data.start_date ?? '',
+          dueDate: data.due_date ?? '',
+          budget: data.budget,
+          currency: data.currency,
+          ownerId: data.owner_id,
+          description: data.description ?? '',
+        })
+        setCustomer(data.customers)
+      })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open])
+  }, [open, isEdit, projectId])
 
   async function onSubmit(values: FormValues) {
     if (!customer) {
       toast.error('Pick a customer')
       return
     }
-    const { data, error } = await supabase
-      .from('projects')
-      .insert({
-        customer_id: customer.id,
-        name: values.name.trim(),
-        project_type: values.projectType,
-        start_date: values.startDate || null,
-        due_date: values.dueDate || null,
-        budget: values.budget,
-        currency: values.currency,
-        owner_id: values.ownerId,
-        description: values.description.trim() || null,
-        created_by: profile?.id,
-      })
-      .select('id')
-      .single()
+    const payload = {
+      customer_id: customer.id,
+      name: values.name.trim(),
+      project_type: values.projectType,
+      start_date: values.startDate || null,
+      due_date: values.dueDate || null,
+      budget: values.budget,
+      currency: values.currency,
+      owner_id: values.ownerId,
+      description: values.description.trim() || null,
+    }
+    const { data, error } = isEdit
+      ? await supabase.from('projects').update(payload).eq('id', projectId!).select('id').single()
+      : await supabase.from('projects').insert({ ...payload, created_by: profile?.id }).select('id').single()
     if (error || !data) {
-      toast.error(error?.message ?? 'Could not create project')
+      toast.error(error?.message ?? `Could not ${isEdit ? 'update' : 'create'} project`)
       return
     }
-    toast.success('Project created')
+    toast.success(isEdit ? 'Project updated' : 'Project created')
     await queryClient.invalidateQueries({ queryKey: ['projects'] })
     onOpenChange(false)
     onCreated?.(data.id)
@@ -126,7 +147,7 @@ export function ProjectFormDialog({ open, onOpenChange, presetCustomer, onCreate
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>New project</DialogTitle>
+          <DialogTitle>{isEdit ? 'Edit project' : 'New project'}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="flex max-h-[75vh] flex-col gap-4 overflow-y-auto">
           {!presetCustomer && (
@@ -233,7 +254,7 @@ export function ProjectFormDialog({ open, onOpenChange, presetCustomer, onCreate
               Cancel
             </Button>
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? 'Creating…' : 'Create project'}
+              {isSubmitting ? 'Saving…' : isEdit ? 'Save changes' : 'Create project'}
             </Button>
           </DialogFooter>
         </form>

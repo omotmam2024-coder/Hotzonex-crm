@@ -28,7 +28,8 @@ function RenewalBadge({ renewalDate, autoRenew }: { renewalDate: string | null; 
 export function ContractsPage() {
   const { profile } = useAuth()
   const { data, isLoading, isError, refetch } = useContracts()
-  const [newOpen, setNewOpen] = useState(false)
+  const [formOpen, setFormOpen] = useState(false)
+  const [editId, setEditId] = useState<string | undefined>(undefined)
   const canWrite = can(profile, 'create')
 
   return (
@@ -36,7 +37,12 @@ export function ContractsPage() {
       <div className="flex items-center justify-between gap-3">
         <h2 className="text-lg font-semibold text-text">Contracts & retainers</h2>
         {canWrite && (
-          <Button onClick={() => setNewOpen(true)}>
+          <Button
+            onClick={() => {
+              setEditId(undefined)
+              setFormOpen(true)
+            }}
+          >
             <PlusIcon /> New contract
           </Button>
         )}
@@ -51,24 +57,32 @@ export function ContractsPage() {
       ) : (
         <div className="flex flex-col gap-2">
           {data.map((c) => (
-            <div key={c.id} className="flex flex-col gap-1.5 rounded-card border border-border bg-surface p-3">
+            <button
+              key={c.id}
+              type="button"
+              onClick={() => {
+                setEditId(c.id)
+                setFormOpen(true)
+              }}
+              className="flex flex-col gap-1.5 rounded-card border border-border bg-surface p-3 text-left hover:bg-surface-2"
+            >
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <p className="text-sm font-medium text-text">{c.title}</p>
                 <span className="text-sm text-text">{formatMoney(c.monthly_amount, c.currency)}/mo</span>
               </div>
               <p className="text-xs text-text-muted">
-                {c.customers?.display_name} · {c.contract_code} · since {formatDate(c.start_date)}
+                {c.customers?.display_name} · {c.contract_code} · since {formatDate(c.start_date)} · created {formatDate(c.created_at)}
               </p>
               <div className="flex flex-wrap items-center gap-1.5">
                 {!c.is_active && <Badge variant="muted">Inactive</Badge>}
                 <RenewalBadge renewalDate={c.renewal_date} autoRenew={c.auto_renew} />
               </div>
-            </div>
+            </button>
           ))}
         </div>
       )}
 
-      <ContractFormDialog open={newOpen} onOpenChange={setNewOpen} />
+      <ContractFormDialog open={formOpen} onOpenChange={setFormOpen} contractId={editId} />
     </div>
   )
 }

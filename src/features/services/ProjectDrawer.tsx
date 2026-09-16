@@ -1,5 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query'
-import { PlusIcon } from 'lucide-react'
+import { PencilIcon, PlusIcon, Trash2Icon } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -21,6 +21,7 @@ import { can } from '@/lib/permissions'
 import { formatDate, formatMoney } from '@/lib/format'
 import { supabase } from '@/lib/supabase'
 import type { Database } from '@/types/database'
+import { ProjectFormDialog } from './ProjectFormDialog'
 import { useMilestoneInvoices, useProjectDetail, useProjectMilestones } from './useProjects'
 
 interface ProjectDrawerProps {
@@ -47,11 +48,30 @@ export function ProjectDrawer({ projectId, onClose }: ProjectDrawerProps) {
   const [adding, setAdding] = useState(false)
   const [completeTarget, setCompleteTarget] = useState<string | null>(null)
   const [completing, setCompleting] = useState(false)
+  const [editOpen, setEditOpen] = useState(false)
+  const [deleteOpen, setDeleteOpen] = useState(false)
+  const [deleting, setDeleting] = useState(false)
 
   const invoiceIds = useMemo(() => milestones?.map((m) => m.invoice_id).filter((id): id is string => !!id) ?? [], [milestones])
   const { data: invoices } = useMilestoneInvoices(invoiceIds)
 
   const canWrite = can(profile, 'create')
+  const canDelete = can(profile, 'delete')
+
+  async function deleteProject() {
+    if (!projectId) return
+    setDeleting(true)
+    const { error } = await supabase.from('projects').update({ deleted_at: new Date().toISOString() }).eq('id', projectId)
+    setDeleting(false)
+    if (error) {
+      toast.error(error.message)
+      return
+    }
+    toast.success('Project deleted')
+    setDeleteOpen(false)
+    await queryClient.invalidateQueries({ queryKey: ['projects'] })
+    onClose()
+  }
 
   async function invalidateAll() {
     await Promise.all([queryClient.invalidateQueries({ queryKey: ['projects'] }), refetch(), refetchMilestones()])
@@ -129,9 +149,29 @@ export function ProjectDrawer({ projectId, onClose }: ProjectDrawerProps) {
         {project && (
           <>
             <SheetHeader>
-              <div className="flex flex-wrap items-center gap-2">
-                <SheetTitle>{project.name}</SheetTitle>
-                <StatusBadge status={project.status} />
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex flex-wrap items-center gap-2">
+                  <SheetTitle>{project.name}</SheetTitle>
+                  <StatusBadge status={project.status} />
+                </div>
+                <div className="flex items-center gap-1">
+                  {canWrite && (
+                    <Button variant="ghost" size="icon" aria-label="Edit project" onClick={() => setEditOpen(true)}>
+                      <PencilIcon className="size-4" />
+                    </Button>
+                  )}
+                  {canDelete && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      aria-label="Delete project"
+                      className="text-danger hover:text-danger"
+                      onClick={() => setDeleteOpen(true)}
+                    >
+                      <Trash2Icon className="size-4" />
+                    </Button>
+                  )}
+                </div>
               </div>
               <p className="text-xs text-text-muted">
                 {project.project_code} · {project.customers?.display_name}
@@ -140,7 +180,7 @@ export function ProjectDrawer({ projectId, onClose }: ProjectDrawerProps) {
 
             {project.description && <p className="text-sm text-text">{project.description}</p>}
 
-            <div className="grid grid-cols-2 gap-3 rounded-card border border-border bg-surface-2 p-3 text-sm">
+            <div className="grid grid-cols-3 gap-3 rounded-card border border-border bg-surface-2 p-3 text-sm">
               <div>
                 <p className="text-text-muted">Budget</p>
                 <p className="text-text">{formatMoney(project.budget, project.currency)}</p>
@@ -148,6 +188,10 @@ export function ProjectDrawer({ projectId, onClose }: ProjectDrawerProps) {
               <div>
                 <p className="text-text-muted">Due date</p>
                 <p className="text-text">{project.due_date ? formatDate(project.due_date) : '—'}</p>
+              </div>
+              <div>
+                <p className="text-text-muted">Created</p>
+                <p className="text-text">{formatDate(project.created_at)}</p>
               </div>
             </div>
 
@@ -265,6 +309,20 @@ export function ProjectDrawer({ projectId, onClose }: ProjectDrawerProps) {
               loading={completing}
               onConfirm={completeMilestone}
             />
+
+            <ConfirmDialog
+              open={deleteOpen}
+              onOpenChange={setDeleteOpen}
+              title="Delete this project?"
+              description="This removes it from every list and report. Invoices already raised from its milestones are kept."
+              requireTypedConfirmation={project.name}
+              confirmLabel="Delete project"
+              variant="destructive"
+              loading={deleting}
+              onConfirm={deleteProject}
+            />
+
+            <ProjectFormDialog open={editOpen} onOpenChange={setEditOpen} projectId={projectId ?? undefined} />
           </>
         )}
       </SheetContent>
