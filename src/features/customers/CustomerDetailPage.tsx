@@ -2,6 +2,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   BriefcaseIcon,
   ClockIcon,
+  CupSodaIcon,
   FileIcon,
   FileTextIcon,
   HeadsetIcon,
@@ -142,6 +143,8 @@ export function CustomerDetailPage() {
           <TabsTrigger value="deals">Deals</TabsTrigger>
           <TabsTrigger value="billing">Billing</TabsTrigger>
           <TabsTrigger value="tickets">Tickets</TabsTrigger>
+          {customer.business_units.includes('services') && <TabsTrigger value="projects">Projects</TabsTrigger>}
+          {customer.business_units.includes('refreshment') && <TabsTrigger value="bookings">Bookings</TabsTrigger>}
           <TabsTrigger value="notes">Notes</TabsTrigger>
           <TabsTrigger value="files">Files</TabsTrigger>
         </TabsList>
@@ -208,6 +211,14 @@ export function CustomerDetailPage() {
 
         <TabsContent value="tickets">
           {tab === 'tickets' && <TicketsTab customerId={customer.id} onOpenTicket={(id) => navigate(`/tickets?ticket=${id}`)} />}
+        </TabsContent>
+
+        <TabsContent value="projects">
+          {tab === 'projects' && <ProjectsTab customerId={customer.id} onOpenProject={(id) => navigate(`/services?project=${id}`)} />}
+        </TabsContent>
+
+        <TabsContent value="bookings">
+          {tab === 'bookings' && <BookingsTab customerId={customer.id} />}
         </TabsContent>
 
         <TabsContent value="notes">
@@ -587,6 +598,86 @@ function TicketsTab({ customerId, onOpenTicket }: { customerId: string; onOpenTi
           </div>
           <StatusBadge status={t.status} />
         </button>
+      ))}
+    </div>
+  )
+}
+
+function ProjectsTab({ customerId, onOpenProject }: { customerId: string; onOpenProject: (id: string) => void }) {
+  const { data, isLoading, isError, refetch } = useQuery({
+    queryKey: ['projects', 'byCustomer', customerId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('projects')
+        .select('id, project_code, name, status, budget, currency, due_date')
+        .eq('customer_id', customerId)
+        .order('created_at', { ascending: false })
+      if (error) throw error
+      return data
+    },
+  })
+
+  if (isLoading) return <SkeletonRows count={3} />
+  if (isError) return <ErrorState onRetry={() => void refetch()} />
+  if (!data || data.length === 0) {
+    return <EmptyState icon={BriefcaseIcon} title="No projects yet" description="Web/IT projects for this customer will show up here." />
+  }
+
+  return (
+    <div className="flex flex-col gap-2">
+      {data.map((p) => (
+        <button
+          key={p.id}
+          onClick={() => onOpenProject(p.id)}
+          className="flex items-center justify-between gap-2 rounded-card border border-border bg-surface p-3 text-left hover:bg-surface-2"
+        >
+          <div>
+            <p className="text-sm font-medium text-text">{p.name}</p>
+            <p className="text-xs text-text-muted">{p.project_code}{p.due_date ? ` · Due ${formatDate(p.due_date)}` : ''}</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-text">{formatMoney(p.budget, p.currency)}</span>
+            <StatusBadge status={p.status} />
+          </div>
+        </button>
+      ))}
+    </div>
+  )
+}
+
+function BookingsTab({ customerId }: { customerId: string }) {
+  const { data, isLoading, isError, refetch } = useQuery({
+    queryKey: ['bookings', 'byCustomer', customerId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('bookings')
+        .select('id, booking_code, event_date, event_type, guests_count, total, currency, status')
+        .eq('customer_id', customerId)
+        .order('event_date', { ascending: false })
+      if (error) throw error
+      return data
+    },
+  })
+
+  if (isLoading) return <SkeletonRows count={3} />
+  if (isError) return <ErrorState onRetry={() => void refetch()} />
+  if (!data || data.length === 0) {
+    return <EmptyState icon={CupSodaIcon} title="No bookings yet" description="Event bookings for this customer will show up here." />
+  }
+
+  return (
+    <div className="flex flex-col gap-2">
+      {data.map((b) => (
+        <div key={b.id} className="flex items-center justify-between gap-2 rounded-card border border-border bg-surface p-3">
+          <div>
+            <p className="text-sm font-medium text-text">{b.event_type} · {b.guests_count} guests</p>
+            <p className="text-xs text-text-muted">{b.booking_code} · {formatDate(b.event_date)}</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-text">{formatMoney(b.total, b.currency)}</span>
+            <StatusBadge status={b.status} />
+          </div>
+        </div>
       ))}
     </div>
   )

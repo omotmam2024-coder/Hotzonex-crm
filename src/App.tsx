@@ -21,6 +21,8 @@ const SellVoucherPage = lazy(() => import('@/features/wifi/SellVoucherPage').the
 const WifiHubPage = lazy(() => import('@/features/wifi/WifiHubPage').then((m) => ({ default: m.WifiHubPage })))
 const TicketsPage = lazy(() => import('@/features/tickets/TicketsPage').then((m) => ({ default: m.TicketsPage })))
 const BillingHubPage = lazy(() => import('@/features/billing/BillingHubPage').then((m) => ({ default: m.BillingHubPage })))
+const ServicesHubPage = lazy(() => import('@/features/services/ServicesHubPage').then((m) => ({ default: m.ServicesHubPage })))
+const RefreshmentHubPage = lazy(() => import('@/features/refreshment/RefreshmentHubPage').then((m) => ({ default: m.RefreshmentHubPage })))
 
 function RouteFallback() {
   return (
@@ -56,6 +58,8 @@ function App() {
             <Route path="/wifi" element={<WifiHubPage />} />
             <Route path="/tickets" element={<TicketsPage />} />
             <Route path="/billing" element={<BillingHubPage />} />
+            <Route path="/services" element={<ServicesHubPage />} />
+            <Route path="/refreshment" element={<RefreshmentHubPage />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />

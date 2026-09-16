@@ -1,4 +1,6 @@
 import {
+  BriefcaseIcon,
+  CupSodaIcon,
   HeadsetIcon,
   HomeIcon,
   KanbanSquareIcon,
@@ -31,4 +33,6 @@ export const NAV_ITEMS: NavItem[] = [
   { label: 'WiFi', path: '/wifi', icon: WifiIcon },
   { label: 'Tickets', path: '/tickets', icon: HeadsetIcon },
   { label: 'Billing', path: '/billing', icon: ReceiptTextIcon },
+  { label: 'Services', path: '/services', icon: BriefcaseIcon },
+  { label: 'Refreshment', path: '/refreshment', icon: CupSodaIcon },
 ]
