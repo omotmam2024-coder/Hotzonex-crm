@@ -92,13 +92,17 @@ export function ProjectFormDialog({ open, onOpenChange, presetCustomer, projectI
       setCustomer(presetCustomer ?? null)
       return
     }
+    // Guards against a stale response landing after the dialog has moved on
+    // to a different project (e.g. closed and reopened for another row
+    // before this fetch resolved) and overwriting the form with wrong data.
+    let cancelled = false
     void supabase
       .from('projects')
       .select('*, customers(id, display_name, phone_primary, customer_code)')
       .eq('id', projectId)
       .single()
       .then(({ data }) => {
-        if (!data) return
+        if (cancelled || !data) return
         reset({
           name: data.name,
           projectType: data.project_type,
@@ -111,6 +115,9 @@ export function ProjectFormDialog({ open, onOpenChange, presetCustomer, projectI
         })
         setCustomer(data.customers)
       })
+    return () => {
+      cancelled = true
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, isEdit, projectId])
 

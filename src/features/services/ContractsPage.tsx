@@ -56,29 +56,44 @@ export function ContractsPage() {
         <EmptyState icon={FileSignatureIcon} title="No contracts yet" description="Retainers and monthly service contracts show up here." />
       ) : (
         <div className="flex flex-col gap-2">
-          {data.map((c) => (
-            <button
-              key={c.id}
-              type="button"
-              onClick={() => {
-                setEditId(c.id)
-                setFormOpen(true)
-              }}
-              className="flex flex-col gap-1.5 rounded-card border border-border bg-surface p-3 text-left hover:bg-surface-2"
-            >
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <p className="text-sm font-medium text-text">{c.title}</p>
-                <span className="text-sm text-text">{formatMoney(c.monthly_amount, c.currency)}/mo</span>
+          {data.map((c) => {
+            const rowContent = (
+              <>
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <p className="text-sm font-medium text-text">{c.title}</p>
+                  <span className="text-sm text-text">{formatMoney(c.monthly_amount, c.currency)}/mo</span>
+                </div>
+                <p className="text-xs text-text-muted">
+                  {c.customers?.display_name} · {c.contract_code} · since {formatDate(c.start_date)} · created{' '}
+                  {formatDate(c.created_at)}
+                </p>
+                <div className="flex flex-wrap items-center gap-1.5">
+                  {!c.is_active && <Badge variant="muted">Inactive</Badge>}
+                  <RenewalBadge renewalDate={c.renewal_date} autoRenew={c.auto_renew} />
+                </div>
+              </>
+            )
+            // Only writers can open the edit dialog — same gate as the "New
+            // contract" button above; a viewer gets a plain read-only row
+            // rather than a form whose Save would just be rejected by RLS.
+            return canWrite ? (
+              <button
+                key={c.id}
+                type="button"
+                onClick={() => {
+                  setEditId(c.id)
+                  setFormOpen(true)
+                }}
+                className="flex flex-col gap-1.5 rounded-card border border-border bg-surface p-3 text-left hover:bg-surface-2"
+              >
+                {rowContent}
+              </button>
+            ) : (
+              <div key={c.id} className="flex flex-col gap-1.5 rounded-card border border-border bg-surface p-3">
+                {rowContent}
               </div>
-              <p className="text-xs text-text-muted">
-                {c.customers?.display_name} · {c.contract_code} · since {formatDate(c.start_date)} · created {formatDate(c.created_at)}
-              </p>
-              <div className="flex flex-wrap items-center gap-1.5">
-                {!c.is_active && <Badge variant="muted">Inactive</Badge>}
-                <RenewalBadge renewalDate={c.renewal_date} autoRenew={c.auto_renew} />
-              </div>
-            </button>
-          ))}
+            )
+          })}
         </div>
       )}
 

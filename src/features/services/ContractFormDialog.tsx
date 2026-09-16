@@ -99,13 +99,17 @@ export function ContractFormDialog({ open, onOpenChange, presetCustomer, contrac
       setCustomer(presetCustomer ?? null)
       return
     }
+    // Guards against a stale response landing after the dialog has moved on
+    // to a different contract (e.g. closed and reopened for another row
+    // before this fetch resolved) and overwriting the form with wrong data.
+    let cancelled = false
     void supabase
       .from('contracts')
       .select('*, customers(id, display_name, phone_primary, customer_code)')
       .eq('id', contractId)
       .single()
       .then(({ data }) => {
-        if (!data) return
+        if (cancelled || !data) return
         reset({
           title: data.title,
           monthlyAmount: data.monthly_amount,
@@ -120,6 +124,9 @@ export function ContractFormDialog({ open, onOpenChange, presetCustomer, contrac
         setCustomer(data.customers)
         setCreatedAt(data.created_at)
       })
+    return () => {
+      cancelled = true
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, isEdit, contractId])
 
