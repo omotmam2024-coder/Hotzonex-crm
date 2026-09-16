@@ -267,7 +267,7 @@ const ACTIVITY_TYPE_LABEL: Record<string, string> = {
 }
 
 function TimelineTab({ customerId, onLogActivity }: { customerId: string; onLogActivity: () => void }) {
-  const { data, isLoading, isError, refetch } = useQuery({
+  const { data: activities, isLoading, isError, refetch } = useQuery({
     queryKey: ['activities', 'timeline', customerId],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -281,9 +281,31 @@ function TimelineTab({ customerId, onLogActivity }: { customerId: string; onLogA
     },
   })
 
+  // Every campaign/manual message attempt appears on the customer timeline
+  // alongside logged activities (§5.10).
+  const { data: messages } = useQuery({
+    queryKey: ['message_log', 'timeline', customerId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('message_log')
+        .select('id, channel, body, status, sent_at, created_at')
+        .eq('customer_id', customerId)
+        .order('created_at', { ascending: false })
+        .limit(50)
+      if (error) throw error
+      return data
+    },
+  })
+
   if (isLoading) return <SkeletonRows />
   if (isError) return <ErrorState onRetry={() => void refetch()} />
-  if (!data || data.length === 0) {
+
+  const timeline = [
+    ...(activities ?? []).map((a) => ({ kind: 'activity' as const, at: a.occurred_at, item: a })),
+    ...(messages ?? []).map((m) => ({ kind: 'message' as const, at: m.sent_at ?? m.created_at, item: m })),
+  ].sort((a, b) => new Date(b.at).getTime() - new Date(a.at).getTime())
+
+  if (timeline.length === 0) {
     return (
       <EmptyState
         icon={ClockIcon}
@@ -296,26 +318,45 @@ function TimelineTab({ customerId, onLogActivity }: { customerId: string; onLogA
 
   return (
     <div className="flex flex-col gap-2">
-      {data.map((a) => (
-        <div key={a.id} className="flex gap-3 rounded-card border border-border bg-surface p-3">
-          <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full bg-accent/15 text-xs font-semibold text-accent">
-            {ACTIVITY_TYPE_LABEL[a.type]?.slice(0, 2) ?? '•'}
-          </div>
-          <div className="min-w-0 flex-1">
-            <div className="flex flex-wrap items-center justify-between gap-1">
-              <span className="text-sm font-medium text-text">
-                {ACTIVITY_TYPE_LABEL[a.type] ?? a.type} · {a.direction}
-              </span>
-              <span className="text-xs text-text-muted" title={formatDate(a.occurred_at)}>
-                {formatRelative(a.occurred_at)}
-              </span>
+      {timeline.map((entry) =>
+        entry.kind === 'activity' ? (
+          <div key={`a-${entry.item.id}`} className="flex gap-3 rounded-card border border-border bg-surface p-3">
+            <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full bg-accent/15 text-xs font-semibold text-accent">
+              {ACTIVITY_TYPE_LABEL[entry.item.type]?.slice(0, 2) ?? '•'}
             </div>
-            {a.subject && <p className="text-sm text-text">{a.subject}</p>}
-            {a.body && <p className="mt-0.5 text-sm whitespace-pre-wrap text-text-muted">{a.body}</p>}
-            {a.duration_minutes != null && <p className="mt-0.5 text-xs text-text-muted">{a.duration_minutes} min</p>}
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center justify-between gap-1">
+                <span className="text-sm font-medium text-text">
+                  {ACTIVITY_TYPE_LABEL[entry.item.type] ?? entry.item.type} · {entry.item.direction}
+                </span>
+                <span className="text-xs text-text-muted" title={formatDate(entry.item.occurred_at)}>
+                  {formatRelative(entry.item.occurred_at)}
+                </span>
+              </div>
+              {entry.item.subject && <p className="text-sm text-text">{entry.item.subject}</p>}
+              {entry.item.body && <p className="mt-0.5 text-sm whitespace-pre-wrap text-text-muted">{entry.item.body}</p>}
+              {entry.item.duration_minutes != null && <p className="mt-0.5 text-xs text-text-muted">{entry.item.duration_minutes} min</p>}
+            </div>
           </div>
-        </div>
-      ))}
+        ) : (
+          <div key={`m-${entry.item.id}`} className="flex gap-3 rounded-card border border-border bg-surface p-3">
+            <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full bg-info/15 text-xs font-semibold text-info">
+              {entry.item.channel.slice(0, 2).toUpperCase()}
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center justify-between gap-1">
+                <span className="text-sm font-medium text-text">
+                  {entry.item.channel} message · {entry.item.status}
+                </span>
+                <span className="text-xs text-text-muted" title={formatDate(entry.at)}>
+                  {formatRelative(entry.at)}
+                </span>
+              </div>
+              <p className="mt-0.5 text-sm whitespace-pre-wrap text-text-muted">{entry.item.body}</p>
+            </div>
+          </div>
+        ),
+      )}
     </div>
   )
 }

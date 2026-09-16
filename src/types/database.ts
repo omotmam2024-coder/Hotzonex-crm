@@ -81,10 +81,24 @@ export type Database = {
             referencedColumns: ["customer_id"]
           },
           {
+            foreignKeyName: "activities_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "v_report_customers"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "activities_deal_id_fkey"
             columns: ["deal_id"]
             isOneToOne: false
             referencedRelation: "deals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "activities_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "v_report_deals"
             referencedColumns: ["id"]
           },
           {
@@ -216,10 +230,80 @@ export type Database = {
             referencedColumns: ["customer_id"]
           },
           {
+            foreignKeyName: "bookings_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "v_report_customers"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "bookings_host_id_fkey"
             columns: ["host_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      campaigns: {
+        Row: {
+          audience_filter: Json
+          budget: number
+          business_unit: Database["public"]["Enums"]["business_unit"]
+          channel: Database["public"]["Enums"]["message_channel"]
+          created_at: string
+          created_by: string | null
+          currency: Database["public"]["Enums"]["currency_code"]
+          id: string
+          name: string
+          scheduled_at: string | null
+          status: Database["public"]["Enums"]["campaign_status"]
+          template_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          audience_filter?: Json
+          budget?: number
+          business_unit?: Database["public"]["Enums"]["business_unit"]
+          channel?: Database["public"]["Enums"]["message_channel"]
+          created_at?: string
+          created_by?: string | null
+          currency?: Database["public"]["Enums"]["currency_code"]
+          id?: string
+          name: string
+          scheduled_at?: string | null
+          status?: Database["public"]["Enums"]["campaign_status"]
+          template_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          audience_filter?: Json
+          budget?: number
+          business_unit?: Database["public"]["Enums"]["business_unit"]
+          channel?: Database["public"]["Enums"]["message_channel"]
+          created_at?: string
+          created_by?: string | null
+          currency?: Database["public"]["Enums"]["currency_code"]
+          id?: string
+          name?: string
+          scheduled_at?: string | null
+          status?: Database["public"]["Enums"]["campaign_status"]
+          template_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campaigns_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "campaigns_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "message_templates"
             referencedColumns: ["id"]
           },
         ]
@@ -307,6 +391,13 @@ export type Database = {
             referencedRelation: "v_customer_balances"
             referencedColumns: ["customer_id"]
           },
+          {
+            foreignKeyName: "contracts_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "v_report_customers"
+            referencedColumns: ["id"]
+          },
         ]
       }
       counters: {
@@ -376,6 +467,13 @@ export type Database = {
             referencedRelation: "v_customer_balances"
             referencedColumns: ["customer_id"]
           },
+          {
+            foreignKeyName: "customer_contacts_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "v_report_customers"
+            referencedColumns: ["id"]
+          },
         ]
       }
       customer_files: {
@@ -423,6 +521,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v_customer_balances"
             referencedColumns: ["customer_id"]
+          },
+          {
+            foreignKeyName: "customer_files_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "v_report_customers"
+            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "customer_files_uploaded_by_fkey"
@@ -485,6 +590,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v_customer_balances"
             referencedColumns: ["customer_id"]
+          },
+          {
+            foreignKeyName: "customer_notes_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "v_report_customers"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -699,6 +811,13 @@ export type Database = {
             referencedColumns: ["customer_id"]
           },
           {
+            foreignKeyName: "deals_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "v_report_customers"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "deals_location_id_fkey"
             columns: ["location_id"]
             isOneToOne: false
@@ -889,10 +1008,24 @@ export type Database = {
             referencedColumns: ["customer_id"]
           },
           {
+            foreignKeyName: "installations_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "v_report_customers"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "installations_deal_id_fkey"
             columns: ["deal_id"]
             isOneToOne: false
             referencedRelation: "deals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "installations_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "v_report_deals"
             referencedColumns: ["id"]
           },
           {
@@ -907,6 +1040,13 @@ export type Database = {
             columns: ["subscription_id"]
             isOneToOne: false
             referencedRelation: "subscriptions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "installations_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "v_report_subscriptions"
             referencedColumns: ["id"]
           },
           {
@@ -973,6 +1113,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v_invoice_aging"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoice_items_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "v_report_revenue"
+            referencedColumns: ["invoice_id"]
           },
           {
             foreignKeyName: "invoice_items_plan_id_fkey"
@@ -1082,6 +1229,13 @@ export type Database = {
             referencedColumns: ["customer_id"]
           },
           {
+            foreignKeyName: "invoices_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "v_report_customers"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "invoices_location_id_fkey"
             columns: ["location_id"]
             isOneToOne: false
@@ -1121,6 +1275,130 @@ export type Database = {
           gps_lng?: number | null
           id?: string
           is_active?: boolean
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      message_log: {
+        Row: {
+          body: string
+          campaign_id: string | null
+          channel: Database["public"]["Enums"]["message_channel"]
+          created_at: string
+          customer_id: string | null
+          error: string | null
+          id: string
+          provider_ref: string | null
+          sent_at: string | null
+          sent_by: string | null
+          status: Database["public"]["Enums"]["message_status"]
+          template_id: string | null
+          to_number: string | null
+        }
+        Insert: {
+          body: string
+          campaign_id?: string | null
+          channel?: Database["public"]["Enums"]["message_channel"]
+          created_at?: string
+          customer_id?: string | null
+          error?: string | null
+          id?: string
+          provider_ref?: string | null
+          sent_at?: string | null
+          sent_by?: string | null
+          status?: Database["public"]["Enums"]["message_status"]
+          template_id?: string | null
+          to_number?: string | null
+        }
+        Update: {
+          body?: string
+          campaign_id?: string | null
+          channel?: Database["public"]["Enums"]["message_channel"]
+          created_at?: string
+          customer_id?: string | null
+          error?: string | null
+          id?: string
+          provider_ref?: string | null
+          sent_at?: string | null
+          sent_by?: string | null
+          status?: Database["public"]["Enums"]["message_status"]
+          template_id?: string | null
+          to_number?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "message_log_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "message_log_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "message_log_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "v_customer_balances"
+            referencedColumns: ["customer_id"]
+          },
+          {
+            foreignKeyName: "message_log_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "v_report_customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "message_log_sent_by_fkey"
+            columns: ["sent_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "message_log_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "message_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      message_templates: {
+        Row: {
+          body: string
+          channel: Database["public"]["Enums"]["message_channel"]
+          created_at: string
+          id: string
+          is_active: boolean
+          language: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          body: string
+          channel?: Database["public"]["Enums"]["message_channel"]
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          language?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          body?: string
+          channel?: Database["public"]["Enums"]["message_channel"]
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          language?: string
           name?: string
           updated_at?: string
         }
@@ -1205,6 +1483,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "payment_allocations_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "v_report_revenue"
+            referencedColumns: ["invoice_id"]
+          },
+          {
             foreignKeyName: "payment_allocations_payment_id_fkey"
             columns: ["payment_id"]
             isOneToOne: false
@@ -1276,6 +1561,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v_customer_balances"
             referencedColumns: ["customer_id"]
+          },
+          {
+            foreignKeyName: "payments_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "v_report_customers"
+            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "payments_location_id_fkey"
@@ -1450,6 +1742,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "project_milestones_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "v_report_revenue"
+            referencedColumns: ["invoice_id"]
+          },
+          {
             foreignKeyName: "project_milestones_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
@@ -1542,10 +1841,24 @@ export type Database = {
             referencedColumns: ["customer_id"]
           },
           {
+            foreignKeyName: "projects_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "v_report_customers"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "projects_deal_id_fkey"
             columns: ["deal_id"]
             isOneToOne: false
             referencedRelation: "deals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "projects_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "v_report_deals"
             referencedColumns: ["id"]
           },
           {
@@ -1612,6 +1925,13 @@ export type Database = {
             referencedRelation: "resellers"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "reseller_settlements_reseller_id_fkey"
+            columns: ["reseller_id"]
+            isOneToOne: false
+            referencedRelation: "v_report_resellers"
+            referencedColumns: ["id"]
+          },
         ]
       }
       resellers: {
@@ -1667,10 +1987,55 @@ export type Database = {
             referencedColumns: ["customer_id"]
           },
           {
+            foreignKeyName: "resellers_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "v_report_customers"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "resellers_location_id_fkey"
             columns: ["location_id"]
             isOneToOne: false
             referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      saved_views: {
+        Row: {
+          created_at: string
+          entity: string
+          filters: Json
+          id: string
+          is_shared: boolean
+          name: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          entity: string
+          filters?: Json
+          id?: string
+          is_shared?: boolean
+          name: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          entity?: string
+          filters?: Json
+          id?: string
+          is_shared?: boolean
+          name?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saved_views_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -1849,6 +2214,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v_customer_balances"
             referencedColumns: ["customer_id"]
+          },
+          {
+            foreignKeyName: "subscriptions_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "v_report_customers"
+            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "subscriptions_location_id_fkey"
@@ -2073,6 +2445,13 @@ export type Database = {
             referencedRelation: "v_customer_balances"
             referencedColumns: ["customer_id"]
           },
+          {
+            foreignKeyName: "tasks_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "v_report_customers"
+            referencedColumns: ["id"]
+          },
         ]
       }
       ticket_categories: {
@@ -2130,6 +2509,13 @@ export type Database = {
             columns: ["ticket_id"]
             isOneToOne: false
             referencedRelation: "tickets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ticket_comments_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "v_report_tickets"
             referencedColumns: ["id"]
           },
           {
@@ -2260,6 +2646,13 @@ export type Database = {
             referencedColumns: ["customer_id"]
           },
           {
+            foreignKeyName: "tickets_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "v_report_customers"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "tickets_location_id_fkey"
             columns: ["location_id"]
             isOneToOne: false
@@ -2271,6 +2664,13 @@ export type Database = {
             columns: ["subscription_id"]
             isOneToOne: false
             referencedRelation: "subscriptions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tickets_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "v_report_subscriptions"
             referencedColumns: ["id"]
           },
           {
@@ -2343,6 +2743,13 @@ export type Database = {
             columns: ["reseller_id"]
             isOneToOne: false
             referencedRelation: "resellers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "voucher_batches_reseller_id_fkey"
+            columns: ["reseller_id"]
+            isOneToOne: false
+            referencedRelation: "v_report_resellers"
             referencedColumns: ["id"]
           },
         ]
@@ -2428,6 +2835,13 @@ export type Database = {
             referencedColumns: ["customer_id"]
           },
           {
+            foreignKeyName: "vouchers_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "v_report_customers"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "vouchers_location_id_fkey"
             columns: ["location_id"]
             isOneToOne: false
@@ -2446,6 +2860,13 @@ export type Database = {
             columns: ["reseller_id"]
             isOneToOne: false
             referencedRelation: "resellers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vouchers_reseller_id_fkey"
+            columns: ["reseller_id"]
+            isOneToOne: false
+            referencedRelation: "v_report_resellers"
             referencedColumns: ["id"]
           },
           {
@@ -2511,6 +2932,258 @@ export type Database = {
             referencedRelation: "v_customer_balances"
             referencedColumns: ["customer_id"]
           },
+          {
+            foreignKeyName: "invoices_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "v_report_customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v_report_customers: {
+        Row: {
+          business_units: Database["public"]["Enums"]["business_unit"][] | null
+          created_at: string | null
+          id: string | null
+          source: string | null
+          status: Database["public"]["Enums"]["customer_status"] | null
+        }
+        Insert: {
+          business_units?: Database["public"]["Enums"]["business_unit"][] | null
+          created_at?: string | null
+          id?: string | null
+          source?: string | null
+          status?: Database["public"]["Enums"]["customer_status"] | null
+        }
+        Update: {
+          business_units?: Database["public"]["Enums"]["business_unit"][] | null
+          created_at?: string | null
+          id?: string | null
+          source?: string | null
+          status?: Database["public"]["Enums"]["customer_status"] | null
+        }
+        Relationships: []
+      }
+      v_report_deals: {
+        Row: {
+          business_unit: Database["public"]["Enums"]["business_unit"] | null
+          closed_at: string | null
+          created_at: string | null
+          currency: Database["public"]["Enums"]["currency_code"] | null
+          id: string | null
+          owner_id: string | null
+          owner_name: string | null
+          pipeline_id: string | null
+          source: string | null
+          stage_id: string | null
+          stage_name: string | null
+          status: Database["public"]["Enums"]["deal_status"] | null
+          value: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deals_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deals_pipeline_id_fkey"
+            columns: ["pipeline_id"]
+            isOneToOne: false
+            referencedRelation: "pipelines"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deals_stage_id_fkey"
+            columns: ["stage_id"]
+            isOneToOne: false
+            referencedRelation: "pipeline_stages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v_report_installations: {
+        Row: {
+          completed_at: string | null
+          created_at: string | null
+          id: string | null
+          job_type: string | null
+          lead_time_hours: number | null
+          location_id: string | null
+          location_name: string | null
+          scheduled_at: string | null
+          started_at: string | null
+          status: Database["public"]["Enums"]["installation_status"] | null
+          technician_id: string | null
+          technician_name: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "installations_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "installations_technician_id_fkey"
+            columns: ["technician_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v_report_resellers: {
+        Row: {
+          commission_due: number | null
+          commission_rate: number | null
+          id: string | null
+          is_active: boolean | null
+          location_id: string | null
+          location_name: string | null
+          name: string | null
+          revenue: number | null
+          total_commission: number | null
+          total_paid: number | null
+          vouchers_sold: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resellers_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v_report_revenue: {
+        Row: {
+          business_unit: Database["public"]["Enums"]["business_unit"] | null
+          currency: Database["public"]["Enums"]["currency_code"] | null
+          id: string | null
+          invoice_id: string | null
+          invoice_status: Database["public"]["Enums"]["invoice_status"] | null
+          issue_date: string | null
+          line_total: number | null
+          location_id: string | null
+          location_name: string | null
+          plan_id: string | null
+          plan_name: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoice_items_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "service_plans"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoices_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v_report_subscriptions: {
+        Row: {
+          auto_renew: boolean | null
+          created_at: string | null
+          currency: Database["public"]["Enums"]["currency_code"] | null
+          end_date: string | null
+          id: string | null
+          location_id: string | null
+          location_name: string | null
+          monthly_fee: number | null
+          plan_id: string | null
+          plan_name: string | null
+          start_date: string | null
+          status: Database["public"]["Enums"]["subscription_status"] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscriptions_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "subscriptions_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "service_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v_report_tickets: {
+        Row: {
+          assigned_to: string | null
+          assignee_name: string | null
+          business_unit: Database["public"]["Enums"]["business_unit"] | null
+          category_id: string | null
+          category_name: string | null
+          created_at: string | null
+          first_response_at: string | null
+          id: string | null
+          priority: Database["public"]["Enums"]["priority_level"] | null
+          resolve_minutes: number | null
+          resolved_at: string | null
+          response_minutes: number | null
+          status: Database["public"]["Enums"]["ticket_status"] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tickets_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tickets_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "ticket_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v_report_voucher_sales: {
+        Row: {
+          currency: Database["public"]["Enums"]["currency_code"] | null
+          id: string | null
+          location_id: string | null
+          location_name: string | null
+          plan_id: string | null
+          plan_name: string | null
+          price_sold: number | null
+          sold_at: string | null
+          status: Database["public"]["Enums"]["voucher_status"] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vouchers_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vouchers_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "service_plans"
+            referencedColumns: ["id"]
+          },
         ]
       }
       v_subscriptions_expiring: {
@@ -2561,6 +3234,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v_customer_balances"
             referencedColumns: ["customer_id"]
+          },
+          {
+            foreignKeyName: "subscriptions_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "v_report_customers"
+            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "subscriptions_location_id_fkey"

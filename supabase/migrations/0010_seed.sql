@@ -30,3 +30,11 @@ insert into public.ticket_categories (name, business_unit, default_priority) val
   ('New Request','wifi','normal'), ('Website Support','services','normal'),
   ('Other','wifi','low')
 on conflict (name) do nothing;
+
+insert into public.message_templates (name, channel, body) values
+  ('Expiry 3 Days','whatsapp','Hello {{customer_name}}, your Hotzonex {{plan}} expires on {{expiry_date}}. Reply here to renew and stay connected. — Hotzonex, Juba'),
+  ('Expired Today','whatsapp','Hello {{customer_name}}, your Hotzonex {{plan}} has expired today. Renew now to restore your connection.'),
+  ('Payment Receipt','whatsapp','Thank you {{customer_name}}. We have received {{amount_paid}}. Receipt {{payment_number}}. — Hotzonex'),
+  ('Invoice Due','whatsapp','Hello {{customer_name}}, invoice {{invoice_number}} of {{amount_due}} is due on {{due_date}}.'),
+  ('Ticket Resolved','whatsapp','Hello {{customer_name}}, ticket {{ticket_number}} has been resolved. Please tell us if the problem returns.')
+on conflict (name) do nothing;

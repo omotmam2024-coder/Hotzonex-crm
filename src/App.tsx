@@ -23,6 +23,8 @@ const TicketsPage = lazy(() => import('@/features/tickets/TicketsPage').then((m)
 const BillingHubPage = lazy(() => import('@/features/billing/BillingHubPage').then((m) => ({ default: m.BillingHubPage })))
 const ServicesHubPage = lazy(() => import('@/features/services/ServicesHubPage').then((m) => ({ default: m.ServicesHubPage })))
 const RefreshmentHubPage = lazy(() => import('@/features/refreshment/RefreshmentHubPage').then((m) => ({ default: m.RefreshmentHubPage })))
+const CampaignsHubPage = lazy(() => import('@/features/campaigns/CampaignsHubPage').then((m) => ({ default: m.CampaignsHubPage })))
+const ReportsHubPage = lazy(() => import('@/features/reports/ReportsHubPage').then((m) => ({ default: m.ReportsHubPage })))
 
 function RouteFallback() {
   return (
@@ -60,6 +62,8 @@ function App() {
             <Route path="/billing" element={<BillingHubPage />} />
             <Route path="/services" element={<ServicesHubPage />} />
             <Route path="/refreshment" element={<RefreshmentHubPage />} />
+            <Route path="/campaigns" element={<CampaignsHubPage />} />
+            <Route path="/reports" element={<ReportsHubPage />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />

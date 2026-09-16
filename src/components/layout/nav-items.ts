@@ -1,10 +1,12 @@
 import {
+  BarChart3Icon,
   BriefcaseIcon,
   CupSodaIcon,
   HeadsetIcon,
   HomeIcon,
   KanbanSquareIcon,
   ListTodoIcon,
+  MegaphoneIcon,
   ReceiptTextIcon,
   TicketPercentIcon,
   UsersIcon,
@@ -35,4 +37,6 @@ export const NAV_ITEMS: NavItem[] = [
   { label: 'Billing', path: '/billing', icon: ReceiptTextIcon },
   { label: 'Services', path: '/services', icon: BriefcaseIcon },
   { label: 'Refreshment', path: '/refreshment', icon: CupSodaIcon },
+  { label: 'Campaigns', path: '/campaigns', icon: MegaphoneIcon },
+  { label: 'Reports', path: '/reports', icon: BarChart3Icon },
 ]

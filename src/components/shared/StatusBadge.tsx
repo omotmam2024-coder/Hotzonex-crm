@@ -37,6 +37,9 @@ const STATUS_VARIANT: Record<string, BadgeVariant> = {
   escalated: 'danger',
   resolved: 'success',
   closed: 'muted',
+  // campaigns
+  scheduled: 'info',
+  running: 'info',
 }
 
 function labelize(status: string) {
