@@ -22,6 +22,7 @@ import { StatusBadge } from '@/components/shared/StatusBadge'
 import { useAuth } from '@/hooks/useAuth'
 import { useDebounced } from '@/hooks/useDebounced'
 import { useProfiles } from '@/hooks/useProfiles'
+import { useUnitLabels } from '@/hooks/useUnitLabels'
 import { formatDate } from '@/lib/format'
 import { can } from '@/lib/permissions'
 import { CustomerFormDialog } from './CustomerFormDialog'
@@ -34,8 +35,6 @@ import { type CustomersFilters, useCustomersList } from './useCustomersList'
 const ImportCustomersDialog = lazy(() =>
   import('./ImportCustomersDialog').then((m) => ({ default: m.ImportCustomersDialog })),
 )
-
-const UNIT_LABEL: Record<string, string> = { wifi: 'WiFi', services: 'Services', refreshment: 'Refreshment' }
 
 interface CustomerRow {
   id: string
@@ -50,6 +49,7 @@ interface CustomerRow {
 }
 
 export function CustomersListPage() {
+  const UNIT_LABEL = useUnitLabels()
   const navigate = useNavigate()
   const { profile } = useAuth()
   const canWrite = can(profile, 'create')
@@ -95,7 +95,7 @@ export function CustomersListPage() {
           <div className="flex gap-1">
             {row.original.business_units.map((u) => (
               <Badge key={u} variant="muted">
-                {UNIT_LABEL[u] ?? u}
+                {UNIT_LABEL[u as keyof typeof UNIT_LABEL] ?? u}
               </Badge>
             ))}
           </div>
@@ -112,7 +112,7 @@ export function CustomersListPage() {
         cell: ({ row }) => <span className="text-text-muted">{formatDate(row.original.created_at)}</span>,
       },
     ],
-    [],
+    [UNIT_LABEL],
   )
 
   return (
@@ -157,9 +157,9 @@ export function CustomersListPage() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All units</SelectItem>
-              <SelectItem value="wifi">WiFi</SelectItem>
-              <SelectItem value="services">Services</SelectItem>
-              <SelectItem value="refreshment">Refreshment</SelectItem>
+              <SelectItem value="wifi">{UNIT_LABEL.wifi}</SelectItem>
+              <SelectItem value="services">{UNIT_LABEL.services}</SelectItem>
+              <SelectItem value="refreshment">{UNIT_LABEL.refreshment}</SelectItem>
             </SelectContent>
           </Select>
           <Select
@@ -245,7 +245,7 @@ export function CustomersListPage() {
                 <div className="flex flex-wrap gap-1">
                   {row.business_units.map((u) => (
                     <Badge key={u} variant="muted">
-                      {UNIT_LABEL[u] ?? u}
+                      {UNIT_LABEL[u as keyof typeof UNIT_LABEL] ?? u}
                     </Badge>
                   ))}
                 </div>

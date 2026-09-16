@@ -26,6 +26,7 @@ import { CustomerPicker } from '@/components/shared/CustomerPicker'
 import { useAuth } from '@/hooks/useAuth'
 import { useLocations } from '@/hooks/useLocations'
 import { useProfiles } from '@/hooks/useProfiles'
+import { useUnitLabels } from '@/hooks/useUnitLabels'
 import { supabase } from '@/lib/supabase'
 import type { Database } from '@/types/database'
 import { useTicketCategories } from './useTickets'
@@ -62,6 +63,7 @@ interface TicketFormDialogProps {
 export function TicketFormDialog({ open, onOpenChange, presetCustomer, defaultBusinessUnit }: TicketFormDialogProps) {
   const { profile } = useAuth()
   const queryClient = useQueryClient()
+  const UNIT_LABEL = useUnitLabels()
   const { data: categories } = useTicketCategories()
   const { data: profiles } = useProfiles()
   const { data: locations } = useLocations()
@@ -147,9 +149,9 @@ export function TicketFormDialog({ open, onOpenChange, presetCustomer, defaultBu
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="wifi">WiFi</SelectItem>
-                      <SelectItem value="services">Services</SelectItem>
-                      <SelectItem value="refreshment">Refreshment</SelectItem>
+                      <SelectItem value="wifi">{UNIT_LABEL.wifi}</SelectItem>
+                      <SelectItem value="services">{UNIT_LABEL.services}</SelectItem>
+                      <SelectItem value="refreshment">{UNIT_LABEL.refreshment}</SelectItem>
                     </SelectContent>
                   </Select>
                 )}

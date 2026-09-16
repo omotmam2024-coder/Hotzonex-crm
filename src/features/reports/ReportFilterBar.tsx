@@ -8,6 +8,7 @@ import {
 } from '@/components/ui/select'
 import { useLocations } from '@/hooks/useLocations'
 import { useProfiles } from '@/hooks/useProfiles'
+import { useUnitLabels } from '@/hooks/useUnitLabels'
 import type { ReportFilters } from './useReports'
 
 interface ReportFilterBarProps {
@@ -29,6 +30,7 @@ export function ReportFilterBar({
 }: ReportFilterBarProps) {
   const { data: locations } = useLocations()
   const { data: profiles } = useProfiles()
+  const UNIT_LABEL = useUnitLabels()
 
   return (
     <div className="flex flex-wrap items-center gap-2">
@@ -52,9 +54,9 @@ export function ReportFilterBar({
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All units</SelectItem>
-            <SelectItem value="wifi">WiFi</SelectItem>
-            <SelectItem value="services">Services</SelectItem>
-            <SelectItem value="refreshment">Refreshment</SelectItem>
+            <SelectItem value="wifi">{UNIT_LABEL.wifi}</SelectItem>
+            <SelectItem value="services">{UNIT_LABEL.services}</SelectItem>
+            <SelectItem value="refreshment">{UNIT_LABEL.refreshment}</SelectItem>
           </SelectContent>
         </Select>
       )}

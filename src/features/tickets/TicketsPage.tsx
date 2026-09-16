@@ -20,6 +20,7 @@ import { StatusBadge } from '@/components/shared/StatusBadge'
 import { useAuth } from '@/hooks/useAuth'
 import { useDebounced } from '@/hooks/useDebounced'
 import { useProfiles } from '@/hooks/useProfiles'
+import { useUnitLabels } from '@/hooks/useUnitLabels'
 import { can } from '@/lib/permissions'
 import { formatRelative } from '@/lib/format'
 import { supabase } from '@/lib/supabase'
@@ -40,6 +41,7 @@ const DEFAULT_FILTERS: TicketsFilters = {
 export function TicketsPage() {
   const { profile } = useAuth()
   const { data: profiles } = useProfiles()
+  const UNIT_LABEL = useUnitLabels()
   const [searchParams, setSearchParams] = useSearchParams()
   const [view, setView] = useState<'board' | 'list'>('board')
   const [filters, setFilters] = useState<TicketsFilters>(DEFAULT_FILTERS)
@@ -122,9 +124,9 @@ export function TicketsPage() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All units</SelectItem>
-              <SelectItem value="wifi">WiFi</SelectItem>
-              <SelectItem value="services">Services</SelectItem>
-              <SelectItem value="refreshment">Refreshment</SelectItem>
+              <SelectItem value="wifi">{UNIT_LABEL.wifi}</SelectItem>
+              <SelectItem value="services">{UNIT_LABEL.services}</SelectItem>
+              <SelectItem value="refreshment">{UNIT_LABEL.refreshment}</SelectItem>
             </SelectContent>
           </Select>
 

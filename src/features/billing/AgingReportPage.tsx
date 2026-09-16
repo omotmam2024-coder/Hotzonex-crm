@@ -12,6 +12,7 @@ import {
 import { EmptyState } from '@/components/shared/EmptyState'
 import { ErrorState } from '@/components/shared/ErrorState'
 import { SkeletonRows } from '@/components/shared/SkeletonRows'
+import { useUnitLabels } from '@/hooks/useUnitLabels'
 import { exportToCsv, exportToPdf } from '@/lib/export'
 import { formatDate, formatMoney } from '@/lib/format'
 import type { Database } from '@/types/database'
@@ -32,6 +33,7 @@ function bucketFor(dueDate: string): Bucket {
 }
 
 export function AgingReportPage() {
+  const UNIT_LABEL = useUnitLabels()
   const [businessUnit, setBusinessUnit] = useState<BusinessUnit | 'all'>('all')
   const { data, isLoading, isError, refetch } = useAgingReport(businessUnit)
 
@@ -89,9 +91,9 @@ export function AgingReportPage() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All units</SelectItem>
-              <SelectItem value="wifi">WiFi</SelectItem>
-              <SelectItem value="services">Services</SelectItem>
-              <SelectItem value="refreshment">Refreshment</SelectItem>
+              <SelectItem value="wifi">{UNIT_LABEL.wifi}</SelectItem>
+              <SelectItem value="services">{UNIT_LABEL.services}</SelectItem>
+              <SelectItem value="refreshment">{UNIT_LABEL.refreshment}</SelectItem>
             </SelectContent>
           </Select>
           <Button variant="outline" size="sm" onClick={handleExportCsv} disabled={bucketed.length === 0}>

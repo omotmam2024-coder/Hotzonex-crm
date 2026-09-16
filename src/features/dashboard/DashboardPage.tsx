@@ -17,6 +17,7 @@ import { Button } from '@/components/ui/button'
 import { StatTile } from '@/components/shared/StatTile'
 import { useActivityModal } from '@/features/activities/ActivityModalProvider'
 import { useAuth } from '@/hooks/useAuth'
+import { useUnitLabels } from '@/hooks/useUnitLabels'
 import { canSeeUnit } from '@/lib/permissions'
 import { formatDateTime, formatMoneyTotals } from '@/lib/format'
 import {
@@ -50,8 +51,6 @@ const ROLE_LABEL: Record<string, string> = {
   viewer: 'Viewer',
 }
 
-const UNIT_LABEL: Record<string, string> = { wifi: 'WiFi', services: 'Services', refreshment: 'Refreshment' }
-
 function SectionLabel({ children }: { children: string }) {
   return <h2 className="text-sm font-semibold text-text-muted uppercase tracking-wide">{children}</h2>
 }
@@ -60,6 +59,7 @@ export function DashboardPage() {
   const { profile } = useAuth()
   const navigate = useNavigate()
   const { openLogActivity } = useActivityModal()
+  const UNIT_LABEL = useUnitLabels()
   const [newCustomerOpen, setNewCustomerOpen] = useState(false)
   const [newTicketOpen, setNewTicketOpen] = useState(false)
 

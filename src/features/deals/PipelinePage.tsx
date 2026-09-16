@@ -10,6 +10,7 @@ import { ErrorState } from '@/components/shared/ErrorState'
 import { SkeletonRows } from '@/components/shared/SkeletonRows'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import { useAuth } from '@/hooks/useAuth'
+import { useUnitLabels } from '@/hooks/useUnitLabels'
 import { formatDate, formatMoney } from '@/lib/format'
 import type { Database } from '@/types/database'
 import { DealDrawer } from './DealDrawer'
@@ -19,10 +20,10 @@ import { useDealsByUnit, useSettingValue } from './useDeals'
 import { usePipelines } from './usePipelines'
 
 type BusinessUnit = Database['public']['Enums']['business_unit']
-const UNIT_LABEL: Record<BusinessUnit, string> = { wifi: 'WiFi', services: 'Services', refreshment: 'Refreshment' }
 
 export function PipelinePage() {
   const { profile } = useAuth()
+  const UNIT_LABEL = useUnitLabels()
   const [searchParams, setSearchParams] = useSearchParams()
   const [unit, setUnit] = useState<BusinessUnit>((profile?.business_units[0] as BusinessUnit) ?? 'wifi')
   const [view, setView] = useState<'kanban' | 'table'>('kanban')

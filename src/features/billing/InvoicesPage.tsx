@@ -17,6 +17,7 @@ import { SkeletonRows } from '@/components/shared/SkeletonRows'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import { useAuth } from '@/hooks/useAuth'
 import { useDebounced } from '@/hooks/useDebounced'
+import { useUnitLabels } from '@/hooks/useUnitLabels'
 import { can } from '@/lib/permissions'
 import { formatDate, formatMoney } from '@/lib/format'
 import { InvoiceDrawer } from './InvoiceDrawer'
@@ -27,6 +28,7 @@ const DEFAULT_FILTERS: InvoicesFilters = { search: '', status: 'all', businessUn
 
 export function InvoicesPage() {
   const { profile } = useAuth()
+  const UNIT_LABEL = useUnitLabels()
   const [searchParams, setSearchParams] = useSearchParams()
   const [filters, setFilters] = useState<InvoicesFilters>(DEFAULT_FILTERS)
   const [searchInput, setSearchInput] = useState('')
@@ -61,9 +63,9 @@ export function InvoicesPage() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All units</SelectItem>
-              <SelectItem value="wifi">WiFi</SelectItem>
-              <SelectItem value="services">Services</SelectItem>
-              <SelectItem value="refreshment">Refreshment</SelectItem>
+              <SelectItem value="wifi">{UNIT_LABEL.wifi}</SelectItem>
+              <SelectItem value="services">{UNIT_LABEL.services}</SelectItem>
+              <SelectItem value="refreshment">{UNIT_LABEL.refreshment}</SelectItem>
             </SelectContent>
           </Select>
           <Select

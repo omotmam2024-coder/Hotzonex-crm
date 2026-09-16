@@ -1,6 +1,7 @@
 import { lazy, Suspense, useState } from 'react'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { useUnitLabels } from '@/hooks/useUnitLabels'
 
 const SuppliersPage = lazy(() => import('./SuppliersPage').then((m) => ({ default: m.SuppliersPage })))
 const SupplierOrdersPage = lazy(() => import('./SupplierOrdersPage').then((m) => ({ default: m.SupplierOrdersPage })))
@@ -23,11 +24,12 @@ function TabFallback() {
 
 export function RefreshmentHubPage() {
   const [tab, setTab] = useState('bookings')
+  const UNIT_LABEL = useUnitLabels()
 
   return (
     <div className="flex flex-col">
       <div className="border-b border-border bg-bg p-4 no-print">
-        <h1 className="mb-3 text-xl font-semibold text-text">Refreshment Centre</h1>
+        <h1 className="mb-3 text-xl font-semibold text-text">{UNIT_LABEL.refreshment} Centre</h1>
         <Tabs value={tab} onValueChange={setTab}>
           <TabsList>
             {TABS.map((t) => (

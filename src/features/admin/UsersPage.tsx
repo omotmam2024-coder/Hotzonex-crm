@@ -10,6 +10,7 @@ import { ErrorState } from '@/components/shared/ErrorState'
 import { SkeletonRows } from '@/components/shared/SkeletonRows'
 import { useAuth } from '@/hooks/useAuth'
 import { useLocations } from '@/hooks/useLocations'
+import { useUnitLabels } from '@/hooks/useUnitLabels'
 import { formatDate } from '@/lib/format'
 import { can } from '@/lib/permissions'
 import { supabase } from '@/lib/supabase'
@@ -34,12 +35,11 @@ const ROLE_BADGE_VARIANT: Record<string, 'success' | 'info' | 'muted' | 'warning
   viewer: 'warning',
 }
 
-const UNIT_LABEL: Record<string, string> = { wifi: 'WiFi', services: 'Services', refreshment: 'Refreshment' }
-
 export function UsersPage() {
   const { profile: currentProfile } = useAuth()
   const { data: users, isLoading, isError, refetch } = useUsers()
   const { data: locations } = useLocations(false)
+  const UNIT_LABEL = useUnitLabels()
   const queryClient = useQueryClient()
   const [formOpen, setFormOpen] = useState(false)
   const [editId, setEditId] = useState<string | undefined>(undefined)

@@ -27,6 +27,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { CustomerPicker } from '@/components/shared/CustomerPicker'
 import { useAuth } from '@/hooks/useAuth'
 import { useLocations } from '@/hooks/useLocations'
+import { useUnitLabels } from '@/hooks/useUnitLabels'
 import { formatMoney } from '@/lib/format'
 import { supabase } from '@/lib/supabase'
 import type { Database } from '@/types/database'
@@ -86,6 +87,7 @@ export function InvoiceFormDialog({ open, onOpenChange, presetCustomer, defaultB
   const queryClient = useQueryClient()
   const { data: locations } = useLocations()
   const { data: plans } = useServicePlans(true)
+  const UNIT_LABEL = useUnitLabels()
   const [customer, setCustomer] = useState<CustomerOption | null>(presetCustomer ?? null)
   const isEdit = !!invoiceId
 
@@ -276,9 +278,9 @@ export function InvoiceFormDialog({ open, onOpenChange, presetCustomer, defaultB
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="wifi">WiFi</SelectItem>
-                      <SelectItem value="services">Services</SelectItem>
-                      <SelectItem value="refreshment">Refreshment</SelectItem>
+                      <SelectItem value="wifi">{UNIT_LABEL.wifi}</SelectItem>
+                      <SelectItem value="services">{UNIT_LABEL.services}</SelectItem>
+                      <SelectItem value="refreshment">{UNIT_LABEL.refreshment}</SelectItem>
                     </SelectContent>
                   </Select>
                 )}

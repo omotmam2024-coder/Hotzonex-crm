@@ -17,6 +17,7 @@ import { useActivityModal } from '@/features/activities/ActivityModalProvider'
 import { NotificationsBell } from '@/features/notifications/NotificationsBell'
 import { useAuth } from '@/hooks/useAuth'
 import { useSettingValue } from '@/hooks/useSettingValue'
+import { useUnitLabels } from '@/hooks/useUnitLabels'
 import { APP_NAME } from '@/lib/appName'
 import { can } from '@/lib/permissions'
 import { cn } from '@/lib/utils'
@@ -24,7 +25,7 @@ import { GlobalSearch } from './GlobalSearch'
 import { OfflineBanner } from './OfflineBanner'
 import { rememberRoute } from './ProtectedRoute'
 import { RouteErrorBoundary } from './RouteErrorBoundary'
-import { NAV_ITEMS } from './nav-items'
+import { NAV_ITEMS, type NavItem } from './nav-items'
 
 const ROLE_LABEL: Record<string, string> = {
   owner: 'Owner',
@@ -51,6 +52,8 @@ export function AppShell() {
   const { data: company } = useSettingValue('company', { name: APP_NAME } as { name: string })
   const companyName = company?.name || APP_NAME
   const companyInitial = companyName.charAt(0).toUpperCase()
+  const unitLabels = useUnitLabels()
+  const navLabel = (item: NavItem) => (item.unit ? unitLabels[item.unit] : item.label)
 
   useEffect(() => {
     rememberRoute(location.pathname)
@@ -92,7 +95,7 @@ export function AppShell() {
               }
             >
               <item.icon className="size-4.5 shrink-0" />
-              {!sidebarCollapsed && <span className="truncate">{item.label}</span>}
+              {!sidebarCollapsed && <span className="truncate">{navLabel(item)}</span>}
             </NavLink>
           ))}
         </nav>
@@ -193,7 +196,7 @@ export function AppShell() {
             }
           >
             <item.icon className="size-5" />
-            {item.label}
+            {navLabel(item)}
           </NavLink>
         ))}
         {secondaryNavItems.length > 0 && (
@@ -232,7 +235,7 @@ export function AppShell() {
                 }
               >
                 <item.icon className="size-5" />
-                {item.label}
+                {navLabel(item)}
               </NavLink>
             ))}
           </div>

@@ -33,11 +33,10 @@ import { LogActivityModal } from '@/features/activities/LogActivityModal'
 import { DealFormDialog } from '@/features/deals/DealFormDialog'
 import { useAuth } from '@/hooks/useAuth'
 import { useProfiles } from '@/hooks/useProfiles'
+import { useUnitLabels } from '@/hooks/useUnitLabels'
 import { formatDate, formatMoney, formatRelative } from '@/lib/format'
 import { supabase } from '@/lib/supabase'
 import { CustomerFormDialog } from './CustomerFormDialog'
-
-const UNIT_LABEL: Record<string, string> = { wifi: 'WiFi', services: 'Services', refreshment: 'Refreshment' }
 
 function useCustomer(id: string) {
   return useQuery({
@@ -81,6 +80,7 @@ export function CustomerDetailPage() {
   const { profile } = useAuth()
   const queryClient = useQueryClient()
   const { data: profiles } = useProfiles()
+  const UNIT_LABEL = useUnitLabels()
   const [tab, setTab] = useState('overview')
   const [editOpen, setEditOpen] = useState(false)
   const [logOpen, setLogOpen] = useState(false)
@@ -139,7 +139,7 @@ export function CustomerDetailPage() {
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="timeline">Timeline</TabsTrigger>
-          {customer.business_units.includes('wifi') && <TabsTrigger value="services">Services</TabsTrigger>}
+          {customer.business_units.includes('wifi') && <TabsTrigger value="services">{UNIT_LABEL.wifi} services</TabsTrigger>}
           <TabsTrigger value="deals">Deals</TabsTrigger>
           <TabsTrigger value="billing">Billing</TabsTrigger>
           <TabsTrigger value="tickets">Tickets</TabsTrigger>
@@ -426,6 +426,7 @@ function DealsTab({
 }
 
 function ServicesTab({ customerId }: { customerId: string }) {
+  const UNIT_LABEL = useUnitLabels()
   const { data: subscriptions, isLoading: subsLoading, isError: subsError, refetch: refetchSubs } = useQuery({
     queryKey: ['subscriptions', 'byCustomer', customerId],
     queryFn: async () => {
@@ -471,7 +472,13 @@ function ServicesTab({ customerId }: { customerId: string }) {
 
   const nothing = (subscriptions?.length ?? 0) === 0 && (vouchers?.length ?? 0) === 0 && (installations?.length ?? 0) === 0
   if (nothing) {
-    return <EmptyState icon={WifiIcon} title="No WiFi services yet" description="Subscriptions, vouchers and installations will show up here." />
+    return (
+      <EmptyState
+        icon={WifiIcon}
+        title={`No ${UNIT_LABEL.wifi} services yet`}
+        description="Subscriptions, vouchers and installations will show up here."
+      />
+    )
   }
 
   return (

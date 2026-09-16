@@ -25,6 +25,7 @@ import { CurrencyInput } from '@/components/shared/CurrencyInput'
 import { CustomerPicker } from '@/components/shared/CustomerPicker'
 import { useAuth } from '@/hooks/useAuth'
 import { useProfiles } from '@/hooks/useProfiles'
+import { useUnitLabels } from '@/hooks/useUnitLabels'
 import { supabase } from '@/lib/supabase'
 import type { Database } from '@/types/database'
 import { usePipelines } from './usePipelines'
@@ -55,6 +56,7 @@ export function DealFormDialog({ open, onOpenChange, presetCustomer, defaultBusi
   const { profile } = useAuth()
   const queryClient = useQueryClient()
   const { data: pipelines } = usePipelines()
+  const UNIT_LABEL = useUnitLabels()
   const { data: profiles } = useProfiles()
 
   const { control, register, handleSubmit, watch, reset, setValue, formState: { errors, isSubmitting } } = useForm<FormValues>({
@@ -170,9 +172,9 @@ export function DealFormDialog({ open, onOpenChange, presetCustomer, defaultBusi
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="wifi">WiFi</SelectItem>
-                    <SelectItem value="services">Services</SelectItem>
-                    <SelectItem value="refreshment">Refreshment</SelectItem>
+                    <SelectItem value="wifi">{UNIT_LABEL.wifi}</SelectItem>
+                    <SelectItem value="services">{UNIT_LABEL.services}</SelectItem>
+                    <SelectItem value="refreshment">{UNIT_LABEL.refreshment}</SelectItem>
                   </SelectContent>
                 </Select>
               )}

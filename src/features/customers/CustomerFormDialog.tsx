@@ -28,6 +28,7 @@ import { TagPicker } from '@/components/shared/TagPicker'
 import { useDebounced } from '@/hooks/useDebounced'
 import { useFormDraft } from '@/hooks/useFormDraft'
 import { useProfiles } from '@/hooks/useProfiles'
+import { useUnitLabels } from '@/hooks/useUnitLabels'
 import { toE164 } from '@/lib/format'
 import { supabase } from '@/lib/supabase'
 import { cn } from '@/lib/utils'
@@ -35,7 +36,6 @@ import type { Database } from '@/types/database'
 import { CUSTOMER_FORM_DEFAULTS, customerFormSchema, type CustomerFormValues } from './customerSchema'
 
 const BUSINESS_UNITS: Database['public']['Enums']['business_unit'][] = ['wifi', 'services', 'refreshment']
-const UNIT_LABEL: Record<string, string> = { wifi: 'WiFi', services: 'Services', refreshment: 'Refreshment' }
 
 interface CustomerFormDialogProps {
   open: boolean
@@ -48,6 +48,7 @@ export function CustomerFormDialog({ open, onOpenChange, customerId, onSaved }: 
   const isEdit = !!customerId
   const navigate = useNavigate()
   const queryClient = useQueryClient()
+  const UNIT_LABEL = useUnitLabels()
   const [submitError, setSubmitError] = useState<string | null>(null)
 
   const { data: locations } = useQuery({

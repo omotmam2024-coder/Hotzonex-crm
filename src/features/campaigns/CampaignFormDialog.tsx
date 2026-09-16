@@ -23,6 +23,7 @@ import {
 } from '@/components/ui/select'
 import { useAuth } from '@/hooks/useAuth'
 import { useLocations } from '@/hooks/useLocations'
+import { useUnitLabels } from '@/hooks/useUnitLabels'
 import { supabase } from '@/lib/supabase'
 import type { Database } from '@/types/database'
 import { useAudiencePreview } from './useAudience'
@@ -72,6 +73,7 @@ function defaults(businessUnit: BusinessUnit): FormValues {
 export function CampaignFormDialog({ open, onOpenChange }: CampaignFormDialogProps) {
   const { profile } = useAuth()
   const queryClient = useQueryClient()
+  const UNIT_LABEL = useUnitLabels()
   const { data: templates } = useMessageTemplates(true)
   const { data: locations } = useLocations()
   const [audiencePreviewFilter, setAudiencePreviewFilter] = useState<Parameters<typeof useAudiencePreview>[0]>({})
@@ -159,9 +161,9 @@ export function CampaignFormDialog({ open, onOpenChange }: CampaignFormDialogPro
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="wifi">WiFi</SelectItem>
-                      <SelectItem value="services">Services</SelectItem>
-                      <SelectItem value="refreshment">Refreshment</SelectItem>
+                      <SelectItem value="wifi">{UNIT_LABEL.wifi}</SelectItem>
+                      <SelectItem value="services">{UNIT_LABEL.services}</SelectItem>
+                      <SelectItem value="refreshment">{UNIT_LABEL.refreshment}</SelectItem>
                     </SelectContent>
                   </Select>
                 )}

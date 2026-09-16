@@ -2,6 +2,7 @@ import { lazy, Suspense, useState } from 'react'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useAuth } from '@/hooks/useAuth'
+import { useUnitLabels } from '@/hooks/useUnitLabels'
 
 // Each tab is its own chunk: the voucher batch/PDF export tooling (jspdf,
 // html2canvas) only loads for staff who actually open Batches, not every
@@ -34,11 +35,12 @@ function TabFallback() {
 export function WifiHubPage() {
   const { profile } = useAuth()
   const [tab, setTab] = useState(profile?.role === 'technician' ? 'installations' : 'subscriptions')
+  const UNIT_LABEL = useUnitLabels()
 
   return (
     <div className="flex flex-col">
       <div className="border-b border-border bg-bg p-4 no-print">
-        <h1 className="mb-3 text-xl font-semibold text-text">WiFi operations</h1>
+        <h1 className="mb-3 text-xl font-semibold text-text">{UNIT_LABEL.wifi} operations</h1>
         <Tabs value={tab} onValueChange={setTab}>
           <TabsList>
             {TABS.map((t) => (

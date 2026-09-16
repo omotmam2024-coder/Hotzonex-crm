@@ -18,6 +18,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch'
 import { useAuth } from '@/hooks/useAuth'
 import { useLocations } from '@/hooks/useLocations'
+import { useUnitLabels } from '@/hooks/useUnitLabels'
 import type { BusinessUnit, UserRole } from '@/lib/permissions'
 import { supabase } from '@/lib/supabase'
 import { cn } from '@/lib/utils'
@@ -28,12 +29,6 @@ const ROLES: { value: Exclude<UserRole, 'owner'>; label: string }[] = [
   { value: 'agent', label: 'Agent' },
   { value: 'technician', label: 'Technician' },
   { value: 'viewer', label: 'Viewer' },
-]
-
-const UNITS: { value: BusinessUnit; label: string }[] = [
-  { value: 'wifi', label: 'WiFi' },
-  { value: 'services', label: 'Services' },
-  { value: 'refreshment', label: 'Refreshment' },
 ]
 
 const schema = z.object({
@@ -68,6 +63,12 @@ export function UserFormDialog({ open, onOpenChange, userId }: UserFormDialogPro
   const isSelf = isEdit && userId === currentProfile?.id
   const queryClient = useQueryClient()
   const { data: locations } = useLocations(false)
+  const unitLabels = useUnitLabels()
+  const UNITS: { value: BusinessUnit; label: string }[] = [
+    { value: 'wifi', label: unitLabels.wifi },
+    { value: 'services', label: unitLabels.services },
+    { value: 'refreshment', label: unitLabels.refreshment },
+  ]
   const [isOwner, setIsOwner] = useState(false)
   const [existingEmail, setExistingEmail] = useState('')
   const {
