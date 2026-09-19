@@ -467,10 +467,27 @@ function ServicesTab({ customerId }: { customerId: string }) {
     },
   })
 
+  const { data: equipment } = useQuery({
+    queryKey: ['equipment', 'byCustomer', customerId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('equipment')
+        .select('id, equipment_code, label, equipment_type, status')
+        .eq('customer_id', customerId)
+        .order('created_at', { ascending: false })
+      if (error) throw error
+      return data
+    },
+  })
+
   if (subsLoading) return <SkeletonRows count={3} />
   if (subsError) return <ErrorState onRetry={() => void refetchSubs()} />
 
-  const nothing = (subscriptions?.length ?? 0) === 0 && (vouchers?.length ?? 0) === 0 && (installations?.length ?? 0) === 0
+  const nothing =
+    (subscriptions?.length ?? 0) === 0 &&
+    (vouchers?.length ?? 0) === 0 &&
+    (installations?.length ?? 0) === 0 &&
+    (equipment?.length ?? 0) === 0
   if (nothing) {
     return (
       <EmptyState
@@ -527,6 +544,23 @@ function ServicesTab({ customerId }: { customerId: string }) {
                 <div className="flex items-center gap-2">
                   <span className="text-text-muted">{i.scheduled_at ? formatDate(i.scheduled_at) : '—'}</span>
                   <StatusBadge status={i.status} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {equipment && equipment.length > 0 && (
+        <div>
+          <h3 className="mb-2 text-sm font-semibold text-text">Equipment</h3>
+          <div className="flex flex-col gap-2">
+            {equipment.map((e) => (
+              <div key={e.id} className="flex items-center justify-between rounded-card border border-border bg-surface p-3 text-sm">
+                <span className="text-text">{e.label}</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-text-muted">{e.equipment_code}</span>
+                  <StatusBadge status={e.status} />
                 </div>
               </div>
             ))}

@@ -13,6 +13,7 @@ const VoucherBatchesPage = lazy(() => import('./VoucherBatchesPage').then((m) =>
 const SubscriptionsPage = lazy(() => import('./SubscriptionsPage').then((m) => ({ default: m.SubscriptionsPage })))
 const InstallationsPage = lazy(() => import('./InstallationsPage').then((m) => ({ default: m.InstallationsPage })))
 const ResellersPage = lazy(() => import('./ResellersPage').then((m) => ({ default: m.ResellersPage })))
+const EquipmentPage = lazy(() => import('./EquipmentPage').then((m) => ({ default: m.EquipmentPage })))
 
 const TABS = [
   { value: 'plans', label: 'Plans' },
@@ -21,6 +22,7 @@ const TABS = [
   { value: 'subscriptions', label: 'Subscriptions' },
   { value: 'installations', label: 'Installations' },
   { value: 'resellers', label: 'Resellers' },
+  { value: 'equipment', label: 'Equipment' },
 ]
 
 function TabFallback() {
@@ -59,6 +61,7 @@ export function WifiHubPage() {
         {tab === 'subscriptions' && <SubscriptionsPage />}
         {tab === 'installations' && <InstallationsPage />}
         {tab === 'resellers' && <ResellersPage />}
+        {tab === 'equipment' && <EquipmentPage />}
       </Suspense>
     </div>
   )

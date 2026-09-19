@@ -845,6 +845,123 @@ export type Database = {
           },
         ]
       }
+      equipment: {
+        Row: {
+          brand: string | null
+          business_unit: Database["public"]["Enums"]["business_unit"]
+          created_at: string
+          created_by: string | null
+          currency: Database["public"]["Enums"]["currency_code"] | null
+          customer_id: string | null
+          deleted_at: string | null
+          equipment_code: string | null
+          equipment_type: Database["public"]["Enums"]["equipment_type"]
+          id: string
+          ip_address: string | null
+          label: string
+          location_id: string | null
+          mac_address: string | null
+          model: string | null
+          notes: string | null
+          photo_paths: string[]
+          purchase_date: string | null
+          purchase_price: number | null
+          serial_number: string | null
+          status: Database["public"]["Enums"]["equipment_status"]
+          updated_at: string
+          vendor: string | null
+          warranty_expiry: string | null
+        }
+        Insert: {
+          brand?: string | null
+          business_unit?: Database["public"]["Enums"]["business_unit"]
+          created_at?: string
+          created_by?: string | null
+          currency?: Database["public"]["Enums"]["currency_code"] | null
+          customer_id?: string | null
+          deleted_at?: string | null
+          equipment_code?: string | null
+          equipment_type?: Database["public"]["Enums"]["equipment_type"]
+          id?: string
+          ip_address?: string | null
+          label: string
+          location_id?: string | null
+          mac_address?: string | null
+          model?: string | null
+          notes?: string | null
+          photo_paths?: string[]
+          purchase_date?: string | null
+          purchase_price?: number | null
+          serial_number?: string | null
+          status?: Database["public"]["Enums"]["equipment_status"]
+          updated_at?: string
+          vendor?: string | null
+          warranty_expiry?: string | null
+        }
+        Update: {
+          brand?: string | null
+          business_unit?: Database["public"]["Enums"]["business_unit"]
+          created_at?: string
+          created_by?: string | null
+          currency?: Database["public"]["Enums"]["currency_code"] | null
+          customer_id?: string | null
+          deleted_at?: string | null
+          equipment_code?: string | null
+          equipment_type?: Database["public"]["Enums"]["equipment_type"]
+          id?: string
+          ip_address?: string | null
+          label?: string
+          location_id?: string | null
+          mac_address?: string | null
+          model?: string | null
+          notes?: string | null
+          photo_paths?: string[]
+          purchase_date?: string | null
+          purchase_price?: number | null
+          serial_number?: string | null
+          status?: Database["public"]["Enums"]["equipment_status"]
+          updated_at?: string
+          vendor?: string | null
+          warranty_expiry?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "equipment_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "equipment_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "equipment_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "v_customer_balances"
+            referencedColumns: ["customer_id"]
+          },
+          {
+            foreignKeyName: "equipment_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "v_report_customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "equipment_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       error_log: {
         Row: {
           context: Json | null
@@ -3453,6 +3570,16 @@ export type Database = {
         | "government"
         | "reseller"
       deal_status: "open" | "won" | "lost"
+      equipment_status: "in_stock" | "deployed" | "faulty" | "retired"
+      equipment_type:
+        | "router"
+        | "switch"
+        | "access_point"
+        | "ont"
+        | "antenna"
+        | "modem"
+        | "cable"
+        | "other"
       installation_status:
         | "scheduled"
         | "en_route"
@@ -3686,6 +3813,17 @@ export const Constants = {
         "reseller",
       ],
       deal_status: ["open", "won", "lost"],
+      equipment_status: ["in_stock", "deployed", "faulty", "retired"],
+      equipment_type: [
+        "router",
+        "switch",
+        "access_point",
+        "ont",
+        "antenna",
+        "modem",
+        "cable",
+        "other",
+      ],
       installation_status: [
         "scheduled",
         "en_route",
